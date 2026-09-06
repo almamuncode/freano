@@ -32,12 +32,19 @@ enum PaymentMethod {
   OTHER
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id            String        @id @default(cuid())
   name          String
   email         String        @unique
   passwordHash  String
   currency      String        @default("BDT")
+  role          Role          @default(USER)
+  isActive      Boolean       @default(true) // false = suspended by an admin
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
