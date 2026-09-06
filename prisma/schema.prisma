@@ -1,0 +1,89 @@
+// Freano database schema
+// Run: npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+// Lets a user tag a transaction as personal, family, or business spend/income
+enum Scope {
+  PERSONAL
+  FAMILY
+  BUSINESS
+}
+
+enum PaymentMethod {
+  CASH
+  BKASH
+  NAGAD
+  ROCKET
+  BANK_TRANSFER
+  CARD
+  OTHER
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  passwordHash  String
+  currency      String        @default("BDT")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  transactions  Transaction[]
+  categories    Category[]
+}
+
+model Category {
+  id        String           @id @default(cuid())
+  name      String
+  type      TransactionType
+  icon      String?          // emoji or icon key, e.g. "🍔"
+  isDefault Boolean          @default(false)
+
+  userId    String?
+  user      User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  @@unique([userId, name, type])
+}
+
+model Transaction {
+  id            String           @id @default(cuid())
+  type          TransactionType
+  amount        Decimal          @db.Decimal(12, 2)
+  currency      String           @default("BDT")
+  scope         Scope            @default(PERSONAL)
+  paymentMethod PaymentMethod    @default(CASH)
+
+  // "source" for income (e.g. client name, project), "payee" for expense (e.g. shop, family member)
+  source        String
+  note          String?
+
+  // Store the exact moment of the transaction (date + time together)
+  occurredAt    DateTime
+
+  categoryId    String?
+  category      Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  userId        String
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([userId, occurredAt])
+  @@index([userId, type])
+}

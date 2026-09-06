@@ -1,0 +1,68 @@
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import TransactionList from "@/components/TransactionList";
+
+export default async function StatementPage({
+  searchParams,
+}: {
+  searchParams: { from?: string; to?: string; scope?: string; type?: string };
+}) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) redirect("/login");
+
+  const { from, to, scope, type } = searchParams;
+
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      userId: (session.user as any).id,
+      ...(type ? { type: type as any } : {}),
+      ...(scope ? { scope: scope as any } : {}),
+      ...(from || to
+        ? {
+            occurredAt: {
+              ...(from ? { gte: new Date(from) } : {}),
+              ...(to ? { lte: new Date(to) } : {}),
+            },
+          }
+        : {}),
+    },
+    include: { category: true },
+    orderBy: { occurredAt: "desc" },
+  });
+
+  return (
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold">Statement</h1>
+
+      {/* Simple filter form - reads/writes URL query params, works without JS */}
+      <form className="bg-white rounded-xl shadow p-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <input type="date" name="from" defaultValue={from} className="border rounded-lg px-2 py-1" />
+        <input type="date" name="to" defaultValue={to} className="border rounded-lg px-2 py-1" />
+        <select name="type" defaultValue={type ?? ""} className="border rounded-lg px-2 py-1">
+          <option value="">All Types</option>
+          <option value="INCOME">Income</option>
+          <option value="EXPENSE">Expense</option>
+        </select>
+        <select name="scope" defaultValue={scope ?? ""} className="border rounded-lg px-2 py-1">
+          <option value="">All Scopes</option>
+          <option value="PERSONAL">Personal</option>
+          <option value="FAMILY">Family</option>
+          <option value="BUSINESS">Business</option>
+        </select>
+        <button className="col-span-2 sm:col-span-4 bg-brand text-white rounded-lg py-2">
+          Filter
+        </button>
+      </form>
+
+      <TransactionList
+        transactions={transactions.map((t) => ({
+          ...t,
+          amount: Number(t.amount),
+          occurredAt: t.occurredAt.toISOString(),
+        }))}
+      />
+    </div>
+  );
+}

@@ -1,0 +1,19 @@
+# Neon CLI local config
+.neon
+
+# Dependencies
+node_modules
+
+# Environment variables (secrets - never commit these)
+.env
+.env*.local
+
+# Next.js build output
+.next
+out
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
