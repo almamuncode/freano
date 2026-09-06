@@ -4,6 +4,7 @@ import { Source_Serif_4, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import { authOptions } from "@/lib/auth";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
+
 const ledgerSerif = Source_Serif_4({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
