@@ -23,7 +23,7 @@ export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { searchParams } = new URL(req.url);
+  const { searchParams } = new URL(req.url || "http://localhost:3000/api/transactions");
   const type = searchParams.get("type");
   const scope = searchParams.get("scope");
   const from = searchParams.get("from");

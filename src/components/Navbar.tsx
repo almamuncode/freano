@@ -9,16 +9,18 @@ const links = [
   { href: "/transactions", label: "Transactions" },
   { href: "/transactions/add", label: "+ Add" },
   { href: "/statement", label: "Statement" },
+  { href: "/profile", label: "Profile" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const logoHref = status === "authenticated" ? "/dashboard" : "/";
 
   return (
     <header className="bg-white border-b border-gray-200">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-brand">
+        <Link href={logoHref} className="text-xl font-bold text-brand">
           {/* Freano */}
           <img className="w-36" src="/logo.png" alt="" />
         </Link>

@@ -8,6 +8,8 @@ export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -18,7 +20,7 @@ export default function RegisterPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, phone, dateOfBirth, password }),
     });
 
     if (!res.ok) {
@@ -48,6 +50,20 @@ export default function RegisterPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="w-full border rounded-lg px-3 py-2"
+        />
+        <input
+          type="tel"
+          placeholder="Phone number"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="w-full border rounded-lg px-3 py-2"
+        />
+        <input
+          type="date"
+          placeholder="Date of birth"
+          value={dateOfBirth}
+          onChange={(e) => setDateOfBirth(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
         />
         <input

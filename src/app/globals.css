@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-paper text-ink antialiased;
+    background-image: radial-gradient(circle at top, rgba(129, 140, 248, 0.12), transparent 35%),
+      linear-gradient(180deg, #f8f7f4 0%, #f5f2eb 100%);
+  }
+
+  * {
+    @apply border-hairline;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-ink;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .card-surface {
+    @apply rounded-2xl border border-hairline bg-white/80 shadow-sm;
+  }
+}
