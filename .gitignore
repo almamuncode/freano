@@ -1,6 +1,7 @@
 # Neon CLI local config
 .neon
 
+
 # Dependencies
 node_modules
 
