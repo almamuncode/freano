@@ -1,8 +1,22 @@
 import { prisma } from "@/lib/prisma";
 import UsersTable from "@/components/admin/UsersTable";
 
+type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: "USER" | "ADMIN";
+  isActive: boolean;
+  createdAt: Date;
+  _count: { transactions: number };
+  transactions: Array<{
+    type: "INCOME" | "EXPENSE";
+    amount: unknown;
+  }>;
+};
+
 export default async function AdminUsersPage() {
-  const users = await prisma.user.findMany({
+  const users: AdminUser[] = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
