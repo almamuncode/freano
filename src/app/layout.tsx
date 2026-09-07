@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Providers from "@/components/Providers";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import InstallPrompt from "@/components/InstallPrompt";
 
 export const metadata: Metadata = {
   title: "Freano — Money Management for Freelancers",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-paper text-ink antialiased">
         <Providers>
           <ServiceWorkerRegister />
+          <InstallPrompt />
           <Navbar />
           <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
         </Providers>

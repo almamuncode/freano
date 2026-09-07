@@ -10,6 +10,10 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -21,6 +25,9 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("edit") === "true") setEditing(true);
+
     const loadProfile = async () => {
       try {
         const res = await fetch("/api/profile", { cache: "no-store" });
@@ -82,6 +89,32 @@ export default function ProfilePage() {
       setError(err instanceof Error ? err.message : "Unable to save profile");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("New passwords do not match.");
+      return;
+    }
+    setPasswordSaving(true);
+    try {
+      const res = await fetch("/api/profile/password", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword: passwordForm.currentPassword, newPassword: passwordForm.newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Unable to update password");
+      setPasswordSuccess(data.message);
+      setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : "Unable to update password");
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -180,6 +213,19 @@ export default function ProfilePage() {
         )}
 
         {editing && <button type="submit" disabled={saving} className="w-full rounded-lg bg-brand px-4 py-2.5 font-medium text-white disabled:opacity-70">{saving ? "Saving..." : "Update profile"}</button>}
+      </form>
+
+      <form id="change-password" onSubmit={handlePasswordSubmit} className="space-y-4 rounded-2xl border border-hairline bg-white p-6 shadow-sm">
+        <div>
+          <h2 className="text-lg font-bold text-ink">Change password</h2>
+          <p className="mt-1 text-sm text-gray-600">Update your password while you are signed in.</p>
+        </div>
+        {passwordError && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{passwordError}</p>}
+        {passwordSuccess && <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{passwordSuccess}</p>}
+        <input type="password" required placeholder="Current password" value={passwordForm.currentPassword} onChange={(e) => setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+        <input type="password" required minLength={6} placeholder="New password (min 6 chars)" value={passwordForm.newPassword} onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+        <input type="password" required minLength={6} placeholder="Confirm new password" value={passwordForm.confirmPassword} onChange={(e) => setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+        <button type="submit" disabled={passwordSaving} className="w-full rounded-lg border border-brand px-4 py-2.5 font-medium text-brand disabled:opacity-70">{passwordSaving ? "Updating..." : "Change password"}</button>
       </form>
     </div>
   );

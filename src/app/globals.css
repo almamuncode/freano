@@ -33,6 +33,84 @@
   a {
     @apply transition-colors duration-200;
   }
+
+  .dark body {
+    @apply bg-[#111827] text-gray-100;
+    background-image: radial-gradient(circle at top, rgba(79, 70, 229, 0.2), transparent 35%), linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  }
+
+  .dark .bg-white,
+  .dark .bg-white\/80 {
+    background-color: #1f2937;
+  }
+
+  .dark .bg-paper {
+    background-color: #111827;
+  }
+
+  .dark .text-ink,
+  .dark .text-gray-700,
+  .dark .text-gray-600,
+  .dark .text-gray-500,
+  .dark .text-gray-400 {
+    color: #e5e7eb;
+  }
+
+  .dark [class*="text-ink/"] {
+    color: rgba(229, 231, 235, 0.72);
+  }
+
+  .dark .text-gray-200,
+  .dark .text-gray-300,
+  .dark .text-gray-400,
+  .dark .text-gray-500,
+  .dark .text-gray-600,
+  .dark .text-gray-700,
+  .dark .text-gray-800 {
+    color: #d1d5db;
+  }
+
+  .dark .bg-gray-100,
+  .dark .bg-gray-50 {
+    background-color: #374151;
+  }
+
+  .dark .hover\:text-gray-800:hover,
+  .dark .hover\:text-gray-700:hover {
+    color: #ffffff;
+  }
+
+  .dark .border-gray-200,
+  .dark .border-gray-300,
+  .dark .border-hairline {
+    border-color: #374151;
+  }
+
+  .dark input,
+  .dark textarea,
+  .dark select {
+    background-color: #111827;
+    color: #f3f4f6;
+    border-color: #4b5563;
+  }
+
+  .dark .hover\:bg-gray-50:hover {
+    background-color: #374151;
+  }
+
+  .dark .landing-hero {
+    background: #111827;
+  }
+
+  .dark .landing-card {
+    background: #1f2937;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .landing-row {
+    background: #293548;
+  }
+
 }
 
 @layer components {

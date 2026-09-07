@@ -41,6 +41,9 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
         />
+        <div className="-mt-2 text-right">
+          <Link href="/forgot-password" className="text-sm text-brand hover:underline">Forgot password?</Link>
+        </div>
         <input
           type="password"
           required

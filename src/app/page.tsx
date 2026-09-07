@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="-mx-4 -mt-6 overflow-hidden">
-      <section className="relative border-b border-hairline bg-[#f7f3e9] px-6 pb-16 pt-14 sm:px-10 sm:pt-20">
+    <div className="landing-page -mx-4 -mt-6 overflow-hidden">
+      <section className="landing-hero relative border-b border-hairline px-6 pb-16 pt-14 sm:px-10 sm:pt-20">
         <div className="absolute right-[-5rem] top-[-6rem] h-64 w-64 rounded-full border-[24px] border-brand/10 sm:right-10 sm:top-[-8rem] sm:h-96 sm:w-96" />
         <div className="relative mx-auto grid max-w-5xl items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
           <div>
@@ -39,7 +39,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-md rotate-1 rounded-xl border border-hairline bg-white p-5 shadow-[0_22px_60px_rgba(32,41,58,0.14)] sm:p-7">
+          <div className="landing-card relative mx-auto w-full max-w-md rotate-1 rounded-xl border border-hairline p-5 shadow-[0_22px_60px_rgba(32,41,58,0.14)] sm:p-7">
             <div className="flex items-start justify-between border-b border-hairline pb-5">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brass">One clear view</p>
@@ -48,15 +48,15 @@ export default function Home() {
               <span className="text-2xl text-brand" aria-hidden="true">+</span>
             </div>
             <div className="space-y-3 py-6">
-              <div className="flex items-center gap-4 rounded-lg bg-[#f7f3e9] p-4">
+              <div className="landing-row flex items-center gap-4 rounded-lg p-4">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#dfeee0] text-sage">+</span>
                 <div><p className="text-sm font-semibold text-ink">Income</p><p className="text-xs text-ink/50">Client work and retainers</p></div>
               </div>
-              <div className="flex items-center gap-4 rounded-lg bg-[#f7f3e9] p-4">
+              <div className="landing-row flex items-center gap-4 rounded-lg p-4">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f3ded8] text-rust">-</span>
                 <div><p className="text-sm font-semibold text-ink">Expenses</p><p className="text-xs text-ink/50">Business and everyday costs</p></div>
               </div>
-              <div className="flex items-center gap-4 rounded-lg bg-[#f7f3e9] p-4">
+              <div className="landing-row flex items-center gap-4 rounded-lg p-4">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#eee4ce] text-brass">*</span>
                 <div><p className="text-sm font-semibold text-ink">Life categories</p><p className="text-xs text-ink/50">Personal, family, and more</p></div>
               </div>

@@ -10,10 +10,28 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [darkMode, setDarkMode] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const logoHref = status === "authenticated" ? "/dashboard" : "/";
   const user = session?.user as { name?: string | null; email?: string | null; role?: string } | undefined;
   const initials = (user?.name || user?.email || "U").slice(0, 1).toUpperCase();
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem("freano-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const enabled = savedTheme ? savedTheme === "dark" : prefersDark;
+    setDarkMode(enabled);
+    document.documentElement.classList.toggle("dark", enabled);
+  }, []);
+
+  const toggleTheme = () => {
+    setDarkMode((current) => {
+      const next = !current;
+      document.documentElement.classList.toggle("dark", next);
+      window.localStorage.setItem("freano-theme", next ? "dark" : "light");
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (status !== "authenticated") return;
@@ -40,11 +58,13 @@ export default function Navbar() {
     <header className="bg-white border-b border-gray-200">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link href={logoHref} className="text-xl font-bold text-brand">
-          {/* Freano */}
-          <img className="w-36" src="/logo.png" alt="" />
+          <img className="w-36" src={darkMode ? "/icons/logo-dark.png" : "/logo.png"} alt="Freano" />
         </Link>
 
         <nav className="flex items-center gap-4 text-sm">
+          <button type="button" onClick={toggleTheme} aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"} className="rounded-full border border-gray-200 px-3 py-1.5 text-base text-gray-600 hover:text-brand dark:border-gray-700 dark:text-gray-300">
+            {darkMode ? "☀" : "☾"}
+          </button>
           {status === "authenticated" ? (
             <>
               <Link href="/dashboard" className={pathname === "/dashboard" ? "text-brand font-semibold" : "text-gray-500 hover:text-gray-800"}>Dashboard</Link>
@@ -77,6 +97,7 @@ export default function Navbar() {
                       <p className="truncate text-xs text-gray-500">{user?.email}</p>
                     </div>
                     <Link href="/profile" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Profile</Link>
+                    <Link href="/settings" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Settings</Link>
                     <Link href="/statement" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Statement</Link>
                     <Link href="/transactions" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Transactions</Link>
                     <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full rounded-lg px-3 py-2 text-left text-red-600 hover:bg-red-50">Sign out</button>
