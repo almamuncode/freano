@@ -74,6 +74,11 @@ freano/
 
    Paste that value into `NEXTAUTH_SECRET`.
 
+   To enable the Contact page email form, create a [Resend](https://resend.com)
+   API key, verify your sending domain, and set `RESEND_API_KEY` and
+   `CONTACT_FROM_EMAIL` in `.env`. Messages are delivered to
+   `mail@almamuncool.com`.
+
 5. **Create the database tables**:
 
    ```bash
