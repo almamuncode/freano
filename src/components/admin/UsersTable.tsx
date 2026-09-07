@@ -7,6 +7,12 @@ type Row = {
   id: string;
   name: string;
   email: string;
+  image: string | null;
+  phone: string | null;
+  profession: string | null;
+  currentCity: string | null;
+  dateOfBirth: string | null;
+  currency: string;
   role: "USER" | "ADMIN";
   isActive: boolean;
   createdAt: string;
@@ -33,6 +39,7 @@ export default function UsersTable({ initialUsers }: { initialUsers: Row[] }) {
   const [query, setQuery] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -106,11 +113,12 @@ export default function UsersTable({ initialUsers }: { initialUsers: Row[] }) {
         </thead>
         <tbody>
           {filtered.map((u) => (
+            <>
             <tr key={u.id} className="border-b border-hairline/70 align-middle">
               <td className="py-3 pr-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 flex items-center justify-center bg-ink text-paper text-xs font-ledger-mono">
-                    {initials(u.name)}
+                  <div className="h-8 w-8 overflow-hidden flex items-center justify-center bg-ink text-paper text-xs font-ledger-mono">
+                    {u.image ? <img src={u.image} alt="" className="h-full w-full object-cover" /> : initials(u.name)}
                   </div>
                   <div>
                     <p className="text-ink font-medium leading-tight">
@@ -150,6 +158,13 @@ export default function UsersTable({ initialUsers }: { initialUsers: Row[] }) {
               <td className="py-3">
                 <div className="flex gap-3 text-xs">
                   <button
+                    type="button"
+                    onClick={() => setExpandedId((current) => current === u.id ? null : u.id)}
+                    className="text-brand underline decoration-hairline underline-offset-4"
+                  >
+                    {expandedId === u.id ? "Hide details" : "View details"}
+                  </button>
+                  <button
                     disabled={busyId === u.id}
                     onClick={() =>
                       patchUser(u.id, { role: u.role === "ADMIN" ? "USER" : "ADMIN" })
@@ -175,6 +190,21 @@ export default function UsersTable({ initialUsers }: { initialUsers: Row[] }) {
                 </div>
               </td>
             </tr>
+            {expandedId === u.id && (
+              <tr key={`${u.id}-details`} className="border-b border-hairline/70 bg-paper/60">
+                <td colSpan={6} className="px-4 py-5">
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <Detail label="Phone" value={u.phone} />
+                    <Detail label="Profession" value={u.profession} />
+                    <Detail label="Current city" value={u.currentCity} />
+                    <Detail label="Date of birth" value={u.dateOfBirth ? new Date(u.dateOfBirth).toLocaleDateString("en-BD", { year: "numeric", month: "long", day: "numeric" }) : null} />
+                    <Detail label="Currency" value={u.currency} />
+                    <Detail label="User ID" value={u.id} />
+                  </div>
+                </td>
+              </tr>
+            )}
+            </>
           ))}
         </tbody>
       </table>
@@ -182,6 +212,15 @@ export default function UsersTable({ initialUsers }: { initialUsers: Row[] }) {
       {filtered.length === 0 && (
         <p className="text-ink/50 text-sm py-8 text-center">No one matches that search.</p>
       )}
+    </div>
+  );
+}
+
+function Detail({ label, value }: { label: string; value: string | null }) {
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-wider text-ink/50">{label}</p>
+      <p className="mt-1 break-words text-sm font-medium text-ink">{value || "Not provided"}</p>
     </div>
   );
 }

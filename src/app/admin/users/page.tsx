@@ -5,6 +5,12 @@ type AdminUser = {
   id: string;
   name: string;
   email: string;
+  image: string | null;
+  phone: string | null;
+  profession: string | null;
+  currentCity: string | null;
+  dateOfBirth: Date | null;
+  currency: string;
   role: "USER" | "ADMIN";
   isActive: boolean;
   createdAt: Date;
@@ -22,6 +28,12 @@ export default async function AdminUsersPage() {
       id: true,
       name: true,
       email: true,
+      image: true,
+      phone: true,
+      profession: true,
+      currentCity: true,
+      dateOfBirth: true,
+      currency: true,
       role: true,
       isActive: true,
       createdAt: true,
@@ -42,6 +54,12 @@ export default async function AdminUsersPage() {
       id: u.id,
       name: u.name,
       email: u.email,
+      image: u.image,
+      phone: u.phone,
+      profession: u.profession,
+      currentCity: u.currentCity,
+      dateOfBirth: u.dateOfBirth ? u.dateOfBirth.toISOString() : null,
+      currency: u.currency,
       role: u.role,
       isActive: u.isActive,
       createdAt: u.createdAt.toISOString(),
