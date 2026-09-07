@@ -2,20 +2,29 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Transaction } from "@/types";
 
 const PAYMENT_METHODS = ["CASH", "BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER", "CARD", "OTHER"];
 const SCOPES = ["PERSONAL", "FAMILY", "BUSINESS"];
 
-export default function TransactionForm() {
+function getLocalDate(occurredAt?: string) {
+  return occurredAt ? new Date(occurredAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+}
+
+function getLocalTime(occurredAt?: string) {
+  return occurredAt ? new Date(occurredAt).toTimeString().slice(0, 5) : new Date().toTimeString().slice(0, 5);
+}
+
+export default function TransactionForm({ transaction }: { transaction?: Transaction }) {
   const router = useRouter();
-  const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
-  const [amount, setAmount] = useState("");
-  const [source, setSource] = useState("");
-  const [scope, setScope] = useState("PERSONAL");
-  const [paymentMethod, setPaymentMethod] = useState("CASH");
-  const [note, setNote] = useState("");
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [time, setTime] = useState(() => new Date().toTimeString().slice(0, 5));
+  const [type, setType] = useState<"INCOME" | "EXPENSE">(transaction?.type ?? "EXPENSE");
+  const [amount, setAmount] = useState(transaction ? String(transaction.amount) : "");
+  const [source, setSource] = useState(transaction?.source ?? "");
+  const [scope, setScope] = useState<string>(transaction?.scope ?? "PERSONAL");
+  const [paymentMethod, setPaymentMethod] = useState<string>(transaction?.paymentMethod ?? "CASH");
+  const [note, setNote] = useState(transaction?.note ?? "");
+  const [date, setDate] = useState(() => getLocalDate(transaction?.occurredAt));
+  const [time, setTime] = useState(() => getLocalTime(transaction?.occurredAt));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,8 +36,8 @@ export default function TransactionForm() {
     const occurredAt = new Date(`${date}T${time}:00`).toISOString();
 
     try {
-      const res = await fetch("/api/transactions", {
-        method: "POST",
+      const res = await fetch(transaction ? `/api/transactions/${transaction.id}` : "/api/transactions", {
+        method: transaction ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type,
@@ -42,13 +51,15 @@ export default function TransactionForm() {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error?.toString() ?? "Failed to save transaction");
+        const data = await res.json().catch(() => null);
+        setError(typeof data?.error === "string" ? data.error : "Failed to save transaction");
         return;
       }
 
       router.push("/transactions");
       router.refresh();
+    } catch {
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -176,7 +187,7 @@ export default function TransactionForm() {
         disabled={loading}
         className="w-full bg-brand text-white py-2 rounded-lg font-medium disabled:opacity-60"
       >
-        {loading ? "Saving..." : "Save Transaction"}
+        {loading ? (transaction ? "Updating..." : "Saving...") : transaction ? "Update Transaction" : "Save Transaction"}
       </button>
     </form>
   );
