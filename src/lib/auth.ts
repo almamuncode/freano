@@ -43,12 +43,26 @@ export const authOptions: NextAuthOptions = {
         token.phone = (user as any).phone ?? null;
         token.dateOfBirth = (user as any).dateOfBirth ?? null;
       }
+
+      if (token.id) {
+        const currentUser = await prisma.user.findUnique({
+          where: { id: String(token.id) },
+          select: { role: true, isActive: true },
+        });
+
+        if (currentUser) {
+          token.role = currentUser.role;
+          token.isActive = currentUser.isActive;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
+        (session.user as any).isActive = token.isActive;
         (session.user as any).phone = token.phone ?? null;
         (session.user as any).dateOfBirth = token.dateOfBirth ?? null;
       }

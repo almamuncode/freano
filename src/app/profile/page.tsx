@@ -14,6 +14,8 @@ export default function ProfilePage() {
     name: "",
     email: "",
     phone: "",
+    profession: "",
+    currentCity: "",
     dateOfBirth: "",
     image: "",
   });
@@ -35,6 +37,8 @@ export default function ProfilePage() {
           name: data.name ?? "",
           email: data.email ?? "",
           phone: data.phone ?? "",
+          profession: data.profession ?? "",
+          currentCity: data.currentCity ?? "",
           dateOfBirth: data.dateOfBirth ?? "",
           image: data.image ?? "",
         });
@@ -130,48 +134,50 @@ export default function ProfilePage() {
           )}
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Full name</label>
-          <input
-            value={form.name}
-            readOnly={!editing}
-            onChange={(e) => handleChange("name", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
-          <input
-            type="email"
-            value={form.email}
-            readOnly={!editing}
-            onChange={(e) => handleChange("email", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Phone number</label>
-          <input
-            type="tel"
-            value={form.phone}
-            readOnly={!editing}
-            onChange={(e) => handleChange("phone", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Date of birth</label>
-          <input
-            type="date"
-            value={form.dateOfBirth}
-            disabled={!editing}
-            onChange={(e) => handleChange("dateOfBirth", e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2"
-          />
-        </div>
+        {editing ? (
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Full name</label>
+              <input value={form.name} onChange={(e) => handleChange("name", e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
+              <input type="email" value={form.email} onChange={(e) => handleChange("email", e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Phone number</label>
+              <input type="tel" pattern="(?:01[3-9][0-9]{8}|\+8801[3-9][0-9]{8}|008801[3-9][0-9]{8})" value={form.phone} onChange={(e) => handleChange("phone", e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2" placeholder="01712345678" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Profession</label>
+              <input value={form.profession} onChange={(e) => handleChange("profession", e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2" placeholder="e.g. Freelance designer" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Current city</label>
+              <input value={form.currentCity} onChange={(e) => handleChange("currentCity", e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2" placeholder="e.g. Dhaka" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Date of birth</label>
+              <input type="date" value={form.dateOfBirth} onChange={(e) => handleChange("dateOfBirth", e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            </div>
+          </div>
+        ) : (
+          <dl className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+            {[
+              ["Full name", form.name],
+              ["Email", form.email],
+              ["Phone number", form.phone],
+              ["Profession", form.profession],
+              ["Current city", form.currentCity],
+              ["Date of birth", form.dateOfBirth],
+            ].map(([label, value]) => (
+              <div key={label} className="border-b border-hairline pb-3">
+                <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-gray-500">{label}</dt>
+                <dd className="mt-1 text-sm font-medium text-ink">{value || "Not provided"}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
 
         {editing && <button type="submit" disabled={saving} className="w-full rounded-lg bg-brand px-4 py-2.5 font-medium text-white disabled:opacity-70">{saving ? "Saving..." : "Update profile"}</button>}
       </form>

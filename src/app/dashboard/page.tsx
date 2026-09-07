@@ -2,50 +2,95 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import SummaryCard from "@/components/SummaryCard";
 import TransactionList from "@/components/TransactionList";
+import DashboardChart from "@/components/DashboardChart";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 
   const userId = (session.user as any).id;
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-  const transactions = await prisma.transaction.findMany({
-    where: { userId },
-    include: { category: true },
-    orderBy: { occurredAt: "desc" },
-    take: 10,
-  });
+  const [user, transactions, monthTransactions] = await Promise.all([
+    prisma.user.findUnique({ where: { id: userId }, select: { name: true, image: true } }),
+    prisma.transaction.findMany({
+      where: { userId },
+      include: { category: true },
+      orderBy: { occurredAt: "desc" },
+      take: 6,
+    }),
+    prisma.transaction.findMany({
+      where: { userId, occurredAt: { gte: monthStart, lt: monthEnd } },
+      orderBy: { occurredAt: "asc" },
+      select: { type: true, amount: true, occurredAt: true },
+    }),
+  ]);
 
-  const totals = await prisma.transaction.groupBy({
-    by: ["type"],
-    where: { userId },
-    _sum: { amount: true },
+  const totals = await prisma.transaction.groupBy({ by: ["type"], where: { userId }, _sum: { amount: true } });
+  const monthIncome = monthTransactions.filter((t) => t.type === "INCOME").reduce((sum, t) => sum + Number(t.amount), 0);
+  const monthExpense = monthTransactions.filter((t) => t.type === "EXPENSE").reduce((sum, t) => sum + Number(t.amount), 0);
+  const chartData = Array.from({ length: now.getDate() }, (_, index) => {
+    const date = new Date(now.getFullYear(), now.getMonth(), index + 1);
+    const dayTransactions = monthTransactions.filter((t) => t.occurredAt.getDate() === index + 1);
+    return {
+      day: String(index + 1),
+      income: dayTransactions.filter((t) => t.type === "INCOME").reduce((sum, t) => sum + Number(t.amount), 0),
+      expense: dayTransactions.filter((t) => t.type === "EXPENSE").reduce((sum, t) => sum + Number(t.amount), 0),
+      date: date.toLocaleDateString("en-BD", { day: "numeric", month: "short" }),
+    };
   });
 
   const income = Number(totals.find((t) => t.type === "INCOME")?._sum.amount ?? 0);
   const expense = Number(totals.find((t) => t.type === "EXPENSE")?._sum.amount ?? 0);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <a href="/transactions/add?type=INCOME" className="rounded-xl bg-income px-4 py-3 text-center font-semibold text-white shadow-sm">Add income</a>
-        <a href="/transactions/add?type=EXPENSE" className="rounded-xl bg-expense px-4 py-3 text-center font-semibold text-white shadow-sm">Add expense</a>
-        <a href="/transactions" className="rounded-xl border border-hairline bg-white px-4 py-3 text-center font-semibold text-ink shadow-sm">History</a>
-        <a href="/statement" className="rounded-xl border border-hairline bg-white px-4 py-3 text-center font-semibold text-ink shadow-sm">Statement</a>
+    <div className="space-y-7">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brass">Your financial home</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink">Good to see you, {user?.name?.split(" ")[0] ?? "there"}.</h1>
+          <p className="mt-1 text-sm text-ink/60">Here is your money at a glance.</p>
+        </div>
+        <p className="text-sm font-medium text-ink/55">{now.toLocaleDateString("en-BD", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <SummaryCard label="Total Income" amount={income} colorClass="text-income" />
-        <SummaryCard label="Total Expense" amount={expense} colorClass="text-expense" />
-        <SummaryCard label="Balance" amount={income - expense} colorClass="text-brand" />
+      <div className="grid gap-5 lg:grid-cols-[1.35fr_0.9fr]">
+        <section className="card-surface overflow-hidden bg-[#20293A] p-6 text-white sm:p-8">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-brand-light text-lg font-bold">
+                {user?.image ? <img src={user.image} alt="" className="h-full w-full object-cover" /> : (user?.name ?? "U").slice(0, 1).toUpperCase()}
+              </div>
+              <div><p className="text-sm text-white/60">Current balance</p><p className="text-xs text-white/45">All time</p></div>
+            </div>
+            <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70">BDT</span>
+          </div>
+          <p className="mt-8 text-4xl font-bold tracking-tight sm:text-5xl">{formatMoney(income - expense)}</p>
+          <div className="mt-8 grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
+            <div><p className="text-xs text-white/50">This month income</p><p className="mt-1 text-lg font-semibold text-[#9fe3a3]">+{formatMoney(monthIncome)}</p></div>
+            <div><p className="text-xs text-white/50">This month expense</p><p className="mt-1 text-lg font-semibold text-[#f3aaa0]">-{formatMoney(monthExpense)}</p></div>
+          </div>
+        </section>
+
+        <section className="card-surface flex flex-col justify-between p-6 sm:p-8">
+          <div><p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Stay on top of it</p><h2 className="mt-3 text-2xl font-bold text-ink">Record a transaction</h2><p className="mt-2 text-sm leading-6 text-ink/60">Keep your balance honest by adding your latest income or expense.</p></div>
+          <a href="/transactions" className="mt-7 flex items-center justify-between rounded-xl bg-brand px-4 py-3 font-semibold text-white shadow-lg shadow-brand/20 transition hover:bg-brand-dark"><span>Open transaction workspace</span><span aria-hidden="true">-&gt;</span></a>
+        </section>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-[1.35fr_0.9fr]">
+        <section className="card-surface p-5 sm:p-6">
+          <div className="mb-5 flex items-end justify-between"><div><h2 className="text-lg font-bold text-ink">Monthly movement</h2><p className="mt-1 text-sm text-ink/55">Income and expenses in {now.toLocaleDateString("en-BD", { month: "long" })}</p></div><div className="flex gap-3 text-xs text-ink/60"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-income" />Income</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-expense" />Expense</span></div></div>
+          <DashboardChart data={chartData} />
+        </section>
+        <section className="card-surface p-5 sm:p-6"><h2 className="text-lg font-bold text-ink">Quick actions</h2><div className="mt-4 grid gap-2"><a href="/transactions/add?type=INCOME" className="flex items-center justify-between rounded-lg bg-[#e7f4e8] px-4 py-3 font-medium text-sage">Add income <span>+</span></a><a href="/transactions/add?type=EXPENSE" className="flex items-center justify-between rounded-lg bg-[#fae9e5] px-4 py-3 font-medium text-rust">Add expense <span>-</span></a><a href="/statement" className="flex items-center justify-between rounded-lg bg-[#f5eddb] px-4 py-3 font-medium text-brass">View statement <span>-&gt;</span></a></div></section>
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold mb-2">Recent Transactions</h2>
+        <div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold text-ink">Recent transactions</h2><a href="/transactions" className="text-sm font-semibold text-brand hover:text-brand-dark">View all</a></div>
         <TransactionList
           transactions={transactions.map((t) => ({
             ...t,
@@ -56,4 +101,8 @@ export default async function DashboardPage() {
       </div>
     </div>
   );
+}
+
+function formatMoney(amount: number) {
+  return new Intl.NumberFormat("en-BD", { style: "currency", currency: "BDT", maximumFractionDigits: 0 }).format(amount);
 }

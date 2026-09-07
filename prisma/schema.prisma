@@ -43,6 +43,8 @@ model User {
   email         String        @unique
   image         String?        @db.Text
   phone         String?
+  profession    String?
+  currentCity   String?
   dateOfBirth   DateTime?
   passwordHash  String
   currency      String        @default("BDT")

@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { isValidBangladeshiPhone, normalizeBangladeshiPhone } from "@/lib/profile-validation";
 
 const registerSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
-  phone: z.string().trim().max(20).optional().or(z.literal("")),
+  phone: z.string().trim().min(1, "Bangladeshi mobile number is required").max(20),
+  profession: z.string().trim().max(80).optional().or(z.literal("")),
+  currentCity: z.string().trim().max(80).optional().or(z.literal("")),
   dateOfBirth: z.string().optional().or(z.literal("")),
   password: z.string().min(6),
 });
@@ -32,9 +35,12 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
-    const { name, email, phone, dateOfBirth, password } = parsed.data;
+    const { name, email, phone, profession, currentCity, dateOfBirth, password } = parsed.data;
 
-    const normalizedPhone = phone?.trim() ? phone.trim() : null;
+    const normalizedPhone = normalizeBangladeshiPhone(phone);
+    if (!isValidBangladeshiPhone(normalizedPhone)) {
+      return NextResponse.json({ error: "Enter a valid Bangladeshi mobile number, such as 01712345678" }, { status: 400 });
+    }
     const normalizedDateOfBirth = dateOfBirth && dateOfBirth.trim() ? new Date(dateOfBirth) : null;
 
     if (dateOfBirth && dateOfBirth.trim() && Number.isNaN(normalizedDateOfBirth?.getTime())) {
@@ -53,6 +59,8 @@ export async function POST(req: Request) {
         name,
         email,
         phone: normalizedPhone,
+        profession: profession?.trim() || null,
+        currentCity: currentCity?.trim() || null,
         dateOfBirth: normalizedDateOfBirth,
         passwordHash,
         categories: {

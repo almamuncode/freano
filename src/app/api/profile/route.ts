@@ -3,11 +3,14 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { isValidBangladeshiPhone, normalizeBangladeshiPhone } from "@/lib/profile-validation";
 
 const profileSchema = z.object({
   name: z.string().min(2).optional(),
   email: z.string().email().optional(),
   phone: z.string().trim().max(20).optional().or(z.literal("")),
+  profession: z.string().trim().max(80).optional().or(z.literal("")),
+  currentCity: z.string().trim().max(80).optional().or(z.literal("")),
   dateOfBirth: z.string().optional().or(z.literal("")),
   image: z
     .string()
@@ -28,6 +31,8 @@ export async function GET() {
       email: true,
       image: true,
       phone: true,
+      profession: true,
+      currentCity: true,
       dateOfBirth: true,
       currency: true,
       role: true,
@@ -52,13 +57,16 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { name, email, phone, dateOfBirth, image } = parsed.data;
+  const { name, email, phone, profession, currentCity, dateOfBirth, image } = parsed.data;
 
-  if (!name && !email && !phone && !dateOfBirth && image === undefined) {
+  if (!name && !email && !phone && !profession && !currentCity && !dateOfBirth && image === undefined) {
     return NextResponse.json({ error: "No profile fields provided" }, { status: 400 });
   }
 
-  const normalizedPhone = phone?.trim() ? phone.trim() : null;
+  const normalizedPhone = phone?.trim() ? normalizeBangladeshiPhone(phone) : null;
+  if (normalizedPhone && !isValidBangladeshiPhone(normalizedPhone)) {
+    return NextResponse.json({ error: "Enter a valid Bangladeshi mobile number, such as 01712345678" }, { status: 400 });
+  }
   const normalizedDateOfBirth = dateOfBirth && dateOfBirth.trim() ? new Date(dateOfBirth) : null;
 
   if (dateOfBirth && dateOfBirth.trim() && Number.isNaN(normalizedDateOfBirth?.getTime())) {
@@ -78,6 +86,8 @@ export async function PATCH(req: Request) {
       ...(name ? { name } : {}),
       ...(email ? { email } : {}),
       ...(phone !== undefined ? { phone: normalizedPhone } : {}),
+      ...(profession !== undefined ? { profession: profession.trim() || null } : {}),
+      ...(currentCity !== undefined ? { currentCity: currentCity.trim() || null } : {}),
       ...(dateOfBirth !== undefined ? { dateOfBirth: normalizedDateOfBirth } : {}),
       ...(image !== undefined ? { image: image || null } : {}),
     },
@@ -87,6 +97,8 @@ export async function PATCH(req: Request) {
       email: true,
       image: true,
       phone: true,
+      profession: true,
+      currentCity: true,
       dateOfBirth: true,
       currency: true,
       role: true,

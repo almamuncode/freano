@@ -9,6 +9,8 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [profession, setProfession] = useState("");
+  const [currentCity, setCurrentCity] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +22,7 @@ export default function RegisterPage() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, phone, dateOfBirth, password }),
+      body: JSON.stringify({ name, email, phone, profession, currentCity, dateOfBirth, password }),
     });
 
     if (!res.ok) {
@@ -54,9 +56,25 @@ export default function RegisterPage() {
         />
         <input
           type="tel"
+          required
+          pattern="(?:01[3-9][0-9]{8}|\+8801[3-9][0-9]{8}|008801[3-9][0-9]{8})"
           placeholder="Phone number"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+          className="w-full border rounded-lg px-3 py-2"
+        />
+        <input
+          type="text"
+          placeholder="Profession (optional)"
+          value={profession}
+          onChange={(e) => setProfession(e.target.value)}
+          className="w-full border rounded-lg px-3 py-2"
+        />
+        <input
+          type="text"
+          placeholder="Current city (optional)"
+          value={currentCity}
+          onChange={(e) => setCurrentCity(e.target.value)}
           className="w-full border rounded-lg px-3 py-2"
         />
         <input
