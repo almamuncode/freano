@@ -27,7 +27,7 @@ export default async function SettingsPage() {
           <p className="mt-2 text-sm leading-6 text-gray-600">Update your name, phone, profession, city, date of birth, and profile picture.</p>
           <span className="mt-5 block text-sm font-semibold text-brand">Manage profile -&gt;</span>
         </Link>
-        <Link href="/profile?section=password" className="card-surface block p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+        <Link href="/settings/password" className="card-surface block p-6 transition hover:-translate-y-0.5 hover:shadow-md">
           <span className="text-2xl text-brand" aria-hidden="true">⚙</span>
           <h2 className="mt-4 text-lg font-bold text-ink">Change password</h2>
           <p className="mt-2 text-sm leading-6 text-gray-600">Update your password securely using your current password.</p>

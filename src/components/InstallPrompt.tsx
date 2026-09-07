@@ -23,11 +23,13 @@ export default function InstallPrompt() {
     if (!standalone) setVisible(true);
 
     const handleInstallAvailable = (event: Event) => {
-      event.preventDefault();
       setInstallEvent(event as InstallPromptEvent);
       setVisible(true);
     };
+    const savedInstallEvent = (window as Window & { freanoInstallEvent?: Event }).freanoInstallEvent;
+    if (savedInstallEvent) handleInstallAvailable(savedInstallEvent);
     window.addEventListener("beforeinstallprompt", handleInstallAvailable);
+    window.addEventListener("freano-install-available", () => handleInstallAvailable((window as Window & { freanoInstallEvent?: Event }).freanoInstallEvent!));
     return () => window.removeEventListener("beforeinstallprompt", handleInstallAvailable);
   }, [pathname, status]);
 

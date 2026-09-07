@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import TransactionList from "@/components/TransactionList";
 import DashboardChart from "@/components/DashboardChart";
+import QuickCalculator from "@/components/QuickCalculator";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -86,7 +87,7 @@ export default async function DashboardPage() {
           <div className="mb-5 flex items-end justify-between"><div><h2 className="text-lg font-bold text-ink">Monthly movement</h2><p className="mt-1 text-sm text-ink/55">Income and expenses in {now.toLocaleDateString("en-BD", { month: "long" })}</p></div><div className="flex gap-3 text-xs text-ink/60"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-income" />Income</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-expense" />Expense</span></div></div>
           <DashboardChart data={chartData} />
         </section>
-        <section className="card-surface p-5 sm:p-6"><h2 className="text-lg font-bold text-ink">Quick actions</h2><div className="mt-4 grid gap-2"><a href="/transactions/add?type=INCOME" className="flex items-center justify-between rounded-lg bg-[#e7f4e8] px-4 py-3 font-medium text-sage">Add income <span>+</span></a><a href="/transactions/add?type=EXPENSE" className="flex items-center justify-between rounded-lg bg-[#fae9e5] px-4 py-3 font-medium text-rust">Add expense <span>-</span></a><a href="/statement" className="flex items-center justify-between rounded-lg bg-[#f5eddb] px-4 py-3 font-medium text-brass">View statement <span>-&gt;</span></a></div></section>
+        <section className="card-surface p-5 sm:p-6"><h2 className="text-lg font-bold text-ink">Quick actions</h2><div className="mt-4 grid gap-2"><a href="/transactions/add?type=INCOME" className="flex items-center justify-between rounded-lg bg-[#e7f4e8] px-4 py-3 font-medium text-sage">Add income <span>+</span></a><a href="/transactions/add?type=EXPENSE" className="flex items-center justify-between rounded-lg bg-[#fae9e5] px-4 py-3 font-medium text-rust">Add expense <span>-</span></a><a href="/statement" className="flex items-center justify-between rounded-lg bg-[#f5eddb] px-4 py-3 font-medium text-brass">View statement <span>-&gt;</span></a></div><QuickCalculator /></section>
       </div>
 
       <div>
