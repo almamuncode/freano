@@ -31,6 +31,13 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Dashboard</h1>
 
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <a href="/transactions/add?type=INCOME" className="rounded-xl bg-income px-4 py-3 text-center font-semibold text-white shadow-sm">Add income</a>
+        <a href="/transactions/add?type=EXPENSE" className="rounded-xl bg-expense px-4 py-3 text-center font-semibold text-white shadow-sm">Add expense</a>
+        <a href="/transactions" className="rounded-xl border border-hairline bg-white px-4 py-3 text-center font-semibold text-ink shadow-sm">History</a>
+        <a href="/statement" className="rounded-xl border border-hairline bg-white px-4 py-3 text-center font-semibold text-ink shadow-sm">Statement</a>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <SummaryCard label="Total Income" amount={income} colorClass="text-income" />
         <SummaryCard label="Total Expense" amount={expense} colorClass="text-expense" />

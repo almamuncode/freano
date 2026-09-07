@@ -41,6 +41,7 @@ model User {
   id            String        @id @default(cuid())
   name          String
   email         String        @unique
+  image         String?        @db.Text
   phone         String?
   dateOfBirth   DateTime?
   passwordHash  String

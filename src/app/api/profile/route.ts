@@ -9,6 +9,11 @@ const profileSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().trim().max(20).optional().or(z.literal("")),
   dateOfBirth: z.string().optional().or(z.literal("")),
+  image: z
+    .string()
+    .max(70000, "Profile picture must be 50 KB or smaller")
+    .refine((value) => value === "" || /^data:image\/(jpeg|png|gif|webp);base64,/.test(value), "Unsupported profile picture")
+    .optional(),
 });
 
 export async function GET() {
@@ -21,6 +26,7 @@ export async function GET() {
       id: true,
       name: true,
       email: true,
+      image: true,
       phone: true,
       dateOfBirth: true,
       currency: true,
@@ -46,9 +52,9 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { name, email, phone, dateOfBirth } = parsed.data;
+  const { name, email, phone, dateOfBirth, image } = parsed.data;
 
-  if (!name && !email && !phone && !dateOfBirth) {
+  if (!name && !email && !phone && !dateOfBirth && image === undefined) {
     return NextResponse.json({ error: "No profile fields provided" }, { status: 400 });
   }
 
@@ -73,11 +79,13 @@ export async function PATCH(req: Request) {
       ...(email ? { email } : {}),
       ...(phone !== undefined ? { phone: normalizedPhone } : {}),
       ...(dateOfBirth !== undefined ? { dateOfBirth: normalizedDateOfBirth } : {}),
+      ...(image !== undefined ? { image: image || null } : {}),
     },
     select: {
       id: true,
       name: true,
       email: true,
+      image: true,
       phone: true,
       dateOfBirth: true,
       currency: true,

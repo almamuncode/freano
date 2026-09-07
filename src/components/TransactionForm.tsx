@@ -15,9 +15,15 @@ function getLocalTime(occurredAt?: string) {
   return occurredAt ? new Date(occurredAt).toTimeString().slice(0, 5) : new Date().toTimeString().slice(0, 5);
 }
 
-export default function TransactionForm({ transaction }: { transaction?: Transaction }) {
+export default function TransactionForm({
+  transaction,
+  initialType,
+}: {
+  transaction?: Transaction;
+  initialType?: "INCOME" | "EXPENSE";
+}) {
   const router = useRouter();
-  const [type, setType] = useState<"INCOME" | "EXPENSE">(transaction?.type ?? "EXPENSE");
+  const [type, setType] = useState<"INCOME" | "EXPENSE">(transaction?.type ?? initialType ?? "EXPENSE");
   const [amount, setAmount] = useState(transaction ? String(transaction.amount) : "");
   const [source, setSource] = useState(transaction?.source ?? "");
   const [scope, setScope] = useState<string>(transaction?.scope ?? "PERSONAL");
