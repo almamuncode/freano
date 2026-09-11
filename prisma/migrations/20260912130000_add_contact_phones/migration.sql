@@ -1,0 +1,2 @@
+ALTER TABLE "Loan" ADD COLUMN "phone" TEXT;
+ALTER TABLE "Project" ADD COLUMN "phone" TEXT;

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import TransactionList from "@/components/TransactionList";
+import StatementExport from "@/components/StatementExport";
 
 export default async function StatementPage({
   searchParams,
@@ -33,11 +34,18 @@ export default async function StatementPage({
   });
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Statement</h1>
+    <div className="space-y-5">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brass">Your records</p>
+          <h1 className="mt-2 text-3xl font-bold text-ink">Statement</h1>
+          <p className="mt-1 text-sm text-ink/60">Review, filter, and download your transaction history.</p>
+        </div>
+        <StatementExport transactions={transactions.map((t) => ({ ...t, amount: Number(t.amount), occurredAt: t.occurredAt.toISOString() }))} />
+      </div>
 
       {/* Simple filter form - reads/writes URL query params, works without JS */}
-      <form className="bg-white rounded-xl shadow p-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <form className="card-surface grid grid-cols-2 gap-3 p-4 sm:grid-cols-4">
         <input type="date" name="from" defaultValue={from} className="border rounded-lg px-2 py-1" />
         <input type="date" name="to" defaultValue={to} className="border rounded-lg px-2 py-1" />
         <select name="type" defaultValue={type ?? ""} className="border rounded-lg px-2 py-1">

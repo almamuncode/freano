@@ -75,6 +75,72 @@
     background-color: #374151;
   }
 
+  .dark .card-surface {
+    background-color: rgba(31, 41, 55, 0.92);
+    border-color: #4b5563;
+  }
+
+  .dark .bg-\[\#e7f4e8\],
+  .dark .bg-\[\#f8fbf8\] {
+    background-color: #193b2b;
+  }
+
+  .dark .bg-\[\#fae9e5\],
+  .dark .bg-\[\#fff9f7\] {
+    background-color: #4a2725;
+  }
+
+  .dark .bg-\[\#f5eddb\],
+  .dark .bg-\[\#fffcf5\] {
+    background-color: #46391f;
+  }
+
+  .dark .text-sage {
+    color: #9fe3a3;
+  }
+
+  .dark .text-rust {
+    color: #f3aaa0;
+  }
+
+  .dark .text-brass {
+    color: #e9c778;
+  }
+
+  .dark .text-brand {
+    color: #a5b4fc;
+  }
+
+  .dark .text-income {
+    color: #a7d8b5;
+  }
+
+  .dark .text-expense {
+    color: #efaaa6;
+  }
+
+  .dark .bg-income {
+    background-color: #326b4c;
+  }
+
+  .dark .bg-expense {
+    background-color: #874747;
+  }
+
+  .dark .bg-income:hover {
+    background-color: #43845f;
+  }
+
+  .dark .bg-expense:hover {
+    background-color: #a45a58;
+  }
+
+  .dark .text-white\/60,
+  .dark .text-white\/50,
+  .dark .text-white\/45 {
+    color: rgba(238, 242, 255, 0.72);
+  }
+
   .dark .hover\:text-gray-800:hover,
   .dark .hover\:text-gray-700:hover {
     color: #ffffff;

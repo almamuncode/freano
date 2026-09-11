@@ -15,6 +15,8 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Freano",
   },
+  applicationName: "Freano",
+  formatDetection: { telephone: false },
   icons: {
     icon: "/icons/icon-192.png",
     apple: "/icons/icon-192.png",

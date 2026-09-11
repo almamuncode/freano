@@ -37,6 +37,22 @@ enum Role {
   ADMIN
 }
 
+enum LoanDirection {
+  LENT
+  BORROWED
+}
+
+enum LoanStatus {
+  OPEN
+  PAID
+}
+
+enum ProjectPaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+}
+
 model User {
   id            String        @id @default(cuid())
   name          String
@@ -56,6 +72,8 @@ model User {
   transactions  Transaction[]
   categories    Category[]
   passwordResetTokens PasswordResetToken[]
+  loans         Loan[]
+  projects      Project[]
 }
 
 model PasswordResetToken {
@@ -111,4 +129,66 @@ model Transaction {
 
   @@index([userId, occurredAt])
   @@index([userId, type])
+}
+
+model Loan {
+  id            String        @id @default(cuid())
+  direction     LoanDirection
+  person        String
+  phone         String?
+  principal     Decimal       @db.Decimal(12, 2)
+  interestRate  Decimal       @default(0) @db.Decimal(5, 2)
+  dueDate       DateTime?
+  status        LoanStatus    @default(OPEN)
+  note          String?
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments      LoanPayment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, direction])
+}
+
+model LoanPayment {
+  id        String   @id @default(cuid())
+  amount    Decimal  @db.Decimal(12, 2)
+  paidAt    DateTime @default(now())
+  note      String?
+  loanId    String
+  loan      Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  @@index([loanId, paidAt])
+}
+
+model Project {
+  id            String               @id @default(cuid())
+  title         String
+  client        String
+  phone         String?
+  agreedAmount  Decimal              @db.Decimal(12, 2)
+  paidAmount    Decimal              @default(0) @db.Decimal(12, 2)
+  status        ProjectPaymentStatus @default(UNPAID)
+  dueDate       DateTime?
+  note          String?
+  userId        String
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments      ProjectPayment[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, dueDate])
+}
+
+model ProjectPayment {
+  id        String   @id @default(cuid())
+  amount    Decimal  @db.Decimal(12, 2)
+  paidAt    DateTime @default(now())
+  note      String?
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, paidAt])
 }

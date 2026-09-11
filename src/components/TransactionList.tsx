@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Transaction } from "@/types";
 
 function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat("en-BD", { style: "currency", currency }).format(amount);
+  return `${currency === "BDT" ? "৳" : `${currency} `}${new Intl.NumberFormat("en-BD", { maximumFractionDigits: 2 }).format(amount)}`;
 }
 
 export default function TransactionList({ transactions }: { transactions: Transaction[] }) {

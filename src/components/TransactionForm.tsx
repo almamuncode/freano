@@ -34,7 +34,7 @@ export default function TransactionForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function saveTransaction(e: React.FormEvent, addAnother = false) {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -62,8 +62,15 @@ export default function TransactionForm({
         return;
       }
 
-      router.push("/transactions");
-      router.refresh();
+      if (transaction || !addAnother) {
+        router.push("/transactions");
+        router.refresh();
+      } else {
+        setAmount("");
+        setSource("");
+        setNote("");
+        setError("Saved. Ready for the next transaction.");
+      }
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -72,7 +79,7 @@ export default function TransactionForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4 max-w-md">
+    <form onSubmit={(event) => saveTransaction(event)} className="bg-white rounded-xl shadow p-6 space-y-4 max-w-md">
       {/* Income vs Expense toggle */}
       <div className="flex rounded-lg overflow-hidden border">
         <button
@@ -188,13 +195,25 @@ export default function TransactionForm({
 
       {error && <p className="text-expense text-sm">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-brand text-white py-2 rounded-lg font-medium disabled:opacity-60"
-      >
-        {loading ? (transaction ? "Updating..." : "Saving...") : transaction ? "Update Transaction" : "Save Transaction"}
-      </button>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex-1 rounded-lg bg-brand py-2 font-medium text-white disabled:opacity-60"
+        >
+          {loading ? (transaction ? "Updating..." : "Saving...") : transaction ? "Update Transaction" : "Save Transaction"}
+        </button>
+        {!transaction && (
+          <button
+            type="button"
+            disabled={loading}
+            onClick={(event) => saveTransaction(event, true)}
+            className="flex-1 rounded-lg border border-brand px-3 py-2 font-medium text-brand disabled:opacity-60"
+          >
+            Save &amp; add another
+          </button>
+        )}
+      </div>
     </form>
   );
 }
