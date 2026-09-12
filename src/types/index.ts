@@ -34,6 +34,7 @@ export interface Transaction {
   bankId?: string | null;
   bank?: Bank | null;
   transferId?: string | null;
+  isDeposit?: boolean;
   source: string;
   note?: string | null;
   occurredAt: string;

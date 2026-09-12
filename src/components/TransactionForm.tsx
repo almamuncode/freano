@@ -8,6 +8,7 @@ import { Transaction } from "@/types";
 const PAYMENT_METHODS = ["CASH", "BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER", "CARD", "OTHER"];
 const SCOPES = ["PERSONAL", "FAMILY", "BUSINESS"];
 const ACCOUNTS = ["BANK", "POCKET_MONEY"];
+const POCKET_SOURCES = ["BANK", "CASH", "PROJECT_FEE", "GIFT", "OTHER"];
 
 function getLocalDate(occurredAt?: string) {
   return occurredAt ? new Date(occurredAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
@@ -40,6 +41,7 @@ export default function TransactionForm({
   const [paymentMethod, setPaymentMethod] = useState<string>(transaction?.paymentMethod ?? "CASH");
   const [account, setAccount] = useState<string>(transaction?.account ?? initialAccount ?? "BANK");
   const [bankId, setBankId] = useState(transaction?.bankId ?? initialBankId ?? "");
+  const [pocketSource, setPocketSource] = useState("CASH");
   const [note, setNote] = useState(transaction?.note ?? "");
   const [date, setDate] = useState(() => getLocalDate(transaction?.occurredAt));
   const [time, setTime] = useState(() => getLocalTime(transaction?.occurredAt));
@@ -54,10 +56,13 @@ export default function TransactionForm({
     const occurredAt = new Date(`${date}T${time}:00`).toISOString();
 
     try {
-      const res = await fetch(transaction ? `/api/transactions/${transaction.id}` : "/api/transactions", {
+      const usePocketFunding = !transaction && type === "INCOME" && account === "POCKET_MONEY";
+      const res = await fetch(usePocketFunding ? "/api/transfers" : transaction ? `/api/transactions/${transaction.id}` : "/api/transactions", {
         method: transaction ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        body: JSON.stringify(usePocketFunding ? {
+          amount: parseFloat(amount), sourceType: pocketSource, bankId: pocketSource === "BANK" ? bankId : undefined, note: note || undefined, occurredAt,
+        } : {
           type,
           amount: parseFloat(amount),
           source,
@@ -116,7 +121,7 @@ export default function TransactionForm({
         </button>
       </div>
 
-      <div>
+      {!(!transaction && type === "INCOME" && account === "POCKET_MONEY") && <div>
         <label className="block text-sm font-medium mb-1">Amount (BDT)</label>
         <input
           type="number"
@@ -127,7 +132,7 @@ export default function TransactionForm({
           className="w-full border rounded-lg px-3 py-2"
           placeholder="0.00"
         />
-      </div>
+      </div>}
 
       <div>
         <label className="block text-sm font-medium mb-1">
@@ -184,6 +189,8 @@ export default function TransactionForm({
         </div>
       )}
 
+      {!transaction && type === "INCOME" && account === "POCKET_MONEY" && <div><label className="block text-sm font-medium mb-1">Money comes from</label><select value={pocketSource} onChange={(e) => setPocketSource(e.target.value)} className="w-full border rounded-lg px-3 py-2">{POCKET_SOURCES.map((item) => <option key={item} value={item}>{item === "BANK" ? "Bank account" : item === "PROJECT_FEE" ? "Project fee" : item === "OTHER" ? "Other income" : item.charAt(0) + item.slice(1).toLowerCase()}</option>)}</select>{pocketSource === "BANK" && <select required value={bankId} onChange={(e) => setBankId(e.target.value)} disabled={banks.length === 0} className="mt-3 w-full border rounded-lg px-3 py-2 disabled:bg-gray-50"><option value="">{banks.length ? "Select the bank to withdraw from" : "Add a bank account first"}</option>{banks.map((bank) => <option key={bank.id} value={bank.id}>{bank.name}</option>)}</select>}</div>}
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Scope</label>
@@ -230,7 +237,7 @@ export default function TransactionForm({
       <div className="flex flex-col gap-2 sm:flex-row">
         <button
           type="submit"
-          disabled={loading || (account === "BANK" && !bankId)}
+          disabled={loading || (account === "BANK" && !bankId) || (type === "INCOME" && account === "POCKET_MONEY" && pocketSource === "BANK" && !bankId)}
           className="flex-1 rounded-lg bg-brand py-2 font-medium text-white disabled:opacity-60"
         >
           {loading ? (transaction ? "Updating..." : "Saving...") : transaction ? "Update Transaction" : "Save Transaction"}
@@ -238,7 +245,7 @@ export default function TransactionForm({
         {!transaction && (
           <button
             type="button"
-            disabled={loading || (account === "BANK" && !bankId)}
+            disabled={loading || (account === "BANK" && !bankId) || (type === "INCOME" && account === "POCKET_MONEY" && pocketSource === "BANK" && !bankId)}
             onClick={(event) => saveTransaction(event, true)}
             className="flex-1 rounded-lg border border-brand px-3 py-2 font-medium text-brand disabled:opacity-60"
           >

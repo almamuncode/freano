@@ -47,7 +47,7 @@ export default function TransactionList({ transactions }: { transactions: Transa
         <div key={t.id} className="flex items-center justify-between gap-4 px-4 py-3">
           <div className="min-w-0">
             <p className="font-medium">
-              {t.category?.icon ?? (t.type === "INCOME" ? "💰" : "💸")} {t.source}
+              {t.category?.icon ?? (t.isDeposit ? "↳" : t.type === "INCOME" ? "💰" : "💸")} {t.isDeposit ? "Deposit: " : ""}{t.source}
             </p>
             <p className="text-xs text-gray-500">
               {new Date(t.occurredAt).toLocaleString("en-BD", {

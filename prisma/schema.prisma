@@ -135,6 +135,7 @@ model Transaction {
   bankId        String?
   bank          Bank?            @relation(fields: [bankId], references: [id], onDelete: SetNull)
   transferId    String?
+  isDeposit     Boolean          @default(false)
 
   // "source" for income (e.g. client name, project), "payee" for expense (e.g. shop, family member)
   source        String

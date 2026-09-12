@@ -24,7 +24,7 @@ export default async function DashboardPage() {
       take: 6,
     }),
     prisma.transaction.findMany({
-      where: { userId, transferId: null, occurredAt: { gte: monthStart, lt: monthEnd } },
+      where: { userId, transferId: null, isDeposit: false, occurredAt: { gte: monthStart, lt: monthEnd } },
       orderBy: { occurredAt: "asc" },
       select: { type: true, amount: true, occurredAt: true },
     }),
