@@ -33,27 +33,32 @@ export default async function DashboardPage() {
     prisma.transaction.groupBy({ by: ["account", "type"], where: { userId }, _sum: { amount: true } }),
   ]);
 
-  const totals = await prisma.transaction.groupBy({ by: ["type"], where: { userId }, _sum: { amount: true } });
   const monthIncome = monthTransactions.filter((t) => t.type === "INCOME").reduce((sum, t) => sum + Number(t.amount), 0);
   const monthExpense = monthTransactions.filter((t) => t.type === "EXPENSE").reduce((sum, t) => sum + Number(t.amount), 0);
+  const monthlyTotalsByDay = new Map<number, { income: number; expense: number }>();
+  for (const transaction of monthTransactions) {
+    const day = transaction.occurredAt.getDate();
+    const totals = monthlyTotalsByDay.get(day) ?? { income: 0, expense: 0 };
+    totals[transaction.type === "INCOME" ? "income" : "expense"] += Number(transaction.amount);
+    monthlyTotalsByDay.set(day, totals);
+  }
   const chartData = Array.from({ length: now.getDate() }, (_, index) => {
     const date = new Date(now.getFullYear(), now.getMonth(), index + 1);
-    const dayTransactions = monthTransactions.filter((t) => t.occurredAt.getDate() === index + 1);
+    const totals = monthlyTotalsByDay.get(index + 1) ?? { income: 0, expense: 0 };
     return {
       day: String(index + 1),
-      income: dayTransactions.filter((t) => t.type === "INCOME").reduce((sum, t) => sum + Number(t.amount), 0),
-      expense: dayTransactions.filter((t) => t.type === "EXPENSE").reduce((sum, t) => sum + Number(t.amount), 0),
+      income: totals.income,
+      expense: totals.expense,
       date: date.toLocaleDateString("en-BD", { day: "numeric", month: "short" }),
     };
   });
 
-  const income = Number(totals.find((t) => t.type === "INCOME")?._sum.amount ?? 0);
-  const expense = Number(totals.find((t) => t.type === "EXPENSE")?._sum.amount ?? 0);
   const accountBalance = (account: "BANK" | "SAVINGS" | "POCKET_MONEY") => accountTotals
     .filter((total) => total.account === account)
     .reduce((sum, total) => sum + (total.type === "INCOME" ? Number(total._sum.amount ?? 0) : -Number(total._sum.amount ?? 0)), 0);
   const bankBalance = accountBalance("BANK");
   const pocketMoneyBalance = accountBalance("POCKET_MONEY");
+  const totalBalance = accountTotals.reduce((sum, total) => sum + (total.type === "INCOME" ? Number(total._sum.amount ?? 0) : -Number(total._sum.amount ?? 0)), 0);
   const lentOutstanding = loans.filter((loan) => loan.direction === "LENT").reduce((sum, loan) => sum + Math.max(Number(loan.principal) * (1 + Number(loan.interestRate) / 100) - loan.payments.reduce((paid, payment) => paid + Number(payment.amount), 0), 0), 0);
   const borrowedOutstanding = loans.filter((loan) => loan.direction === "BORROWED").reduce((sum, loan) => sum + Math.max(Number(loan.principal) * (1 + Number(loan.interestRate) / 100) - loan.payments.reduce((paid, payment) => paid + Number(payment.amount), 0), 0), 0);
   const projectOutstanding = projects.reduce((sum, project) => sum + Math.max(Number(project.agreedAmount) - Number(project.paidAmount), 0), 0);
@@ -80,7 +85,7 @@ export default async function DashboardPage() {
             </div>
             <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70">Bangladeshi Taka</span>
           </div>
-          <p className="mt-8 text-4xl font-bold tracking-tight sm:text-5xl">{formatMoney(income - expense)}</p>
+          <p className="mt-8 text-4xl font-bold tracking-tight sm:text-5xl">{formatMoney(totalBalance)}</p>
           <div className="mt-8 grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
             <div><p className="text-xs text-white/50">This month income</p><p className="mt-1 text-lg font-semibold text-[#9fe3a3]">+{formatMoney(monthIncome)}</p></div>
             <div><p className="text-xs text-white/50">This month expense</p><p className="mt-1 text-lg font-semibold text-[#f3aaa0]">-{formatMoney(monthExpense)}</p></div>

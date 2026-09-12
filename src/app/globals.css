@@ -35,12 +35,12 @@
 
   .dark body {
     @apply bg-[#000000] text-gray-100;
-    background-image: linear-gradient(180deg, #171719 0, #000000 34rem);
+    background-image: linear-gradient(180deg, #252a32 0, #16181d 21rem, #000000 46rem);
   }
 
   .dark .bg-white,
   .dark .bg-white\/80 {
-    background-color: #1d1d1f;
+    background-color: #202329;
   }
 
   .dark .bg-paper {
@@ -75,23 +75,24 @@
   }
 
   .dark .card-surface {
-    background-color: rgba(29, 29, 31, 0.92);
-    border-color: #424245;
+    background-color: rgba(32, 35, 41, 0.9);
+    border-color: #4a505a;
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.04) inset, 0 14px 34px rgba(0, 0, 0, 0.18);
   }
 
   .dark .bg-\[\#e7f4e8\],
   .dark .bg-\[\#f8fbf8\] {
-    background-color: #193b2b;
+    background-color: #17382a;
   }
 
   .dark .bg-\[\#fae9e5\],
   .dark .bg-\[\#fff9f7\] {
-    background-color: #4a2725;
+    background-color: #41282a;
   }
 
   .dark .bg-\[\#f5eddb\],
   .dark .bg-\[\#fffcf5\] {
-    background-color: #46391f;
+    background-color: #35322a;
   }
 
   .dark .text-sage {
@@ -148,19 +149,19 @@
   .dark .border-gray-200,
   .dark .border-gray-300,
   .dark .border-hairline {
-    border-color: #424245;
+    border-color: #4a505a;
   }
 
   .dark input,
   .dark textarea,
   .dark select {
-    background-color: #1d1d1f;
+    background-color: #171a1f;
     color: #f3f4f6;
     border-color: #4b5563;
   }
 
   .dark .hover\:bg-gray-50:hover {
-    background-color: #374151;
+    background-color: #30353d;
   }
 
   .dark .landing-hero {
@@ -168,12 +169,12 @@
   }
 
   .dark .landing-card {
-    background: #1d1d1f;
+    background: #202329;
     box-shadow: 0 22px 60px rgba(0, 0, 0, 0.3);
   }
 
   .dark .landing-row {
-    background: #2c2c2e;
+    background: #30353d;
   }
 
 }
@@ -183,4 +184,18 @@
     @apply rounded-xl border border-hairline bg-white/80 shadow-sm;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.035);
   }
+
+  .app-reveal {
+    animation: app-reveal 320ms ease-out both;
+  }
+}
+
+@keyframes app-reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .app-reveal { animation: none; }
 }
