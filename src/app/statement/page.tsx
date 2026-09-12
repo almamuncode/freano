@@ -8,18 +8,19 @@ import StatementExport from "@/components/StatementExport";
 export default async function StatementPage({
   searchParams,
 }: {
-  searchParams: { from?: string; to?: string; scope?: string; type?: string };
+  searchParams: { from?: string; to?: string; scope?: string; type?: string; account?: string };
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 
-  const { from, to, scope, type } = searchParams;
+  const { from, to, scope, type, account } = searchParams;
 
   const transactions = await prisma.transaction.findMany({
     where: {
       userId: (session.user as any).id,
       ...(type ? { type: type as any } : {}),
       ...(scope ? { scope: scope as any } : {}),
+      ...(account ? { account: account as any } : {}),
       ...(from || to
         ? {
             occurredAt: {
@@ -45,7 +46,7 @@ export default async function StatementPage({
       </div>
 
       {/* Simple filter form - reads/writes URL query params, works without JS */}
-      <form className="card-surface grid grid-cols-2 gap-3 p-4 sm:grid-cols-4">
+      <form className="card-surface grid grid-cols-2 gap-3 p-4 sm:grid-cols-5">
         <input type="date" name="from" defaultValue={from} className="border rounded-lg px-2 py-1" />
         <input type="date" name="to" defaultValue={to} className="border rounded-lg px-2 py-1" />
         <select name="type" defaultValue={type ?? ""} className="border rounded-lg px-2 py-1">
@@ -59,7 +60,12 @@ export default async function StatementPage({
           <option value="FAMILY">Family</option>
           <option value="BUSINESS">Business</option>
         </select>
-        <button className="col-span-2 sm:col-span-4 bg-brand text-white rounded-lg py-2">
+        <select name="account" defaultValue={account ?? ""} className="border rounded-lg px-2 py-1">
+          <option value="">All accounts</option>
+          <option value="BANK">Bank account</option>
+          <option value="POCKET_MONEY">Pocket money</option>
+        </select>
+        <button className="col-span-2 sm:col-span-5 bg-brand text-white rounded-lg py-2">
           Filter
         </button>
       </form>

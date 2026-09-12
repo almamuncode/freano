@@ -12,6 +12,8 @@ const updateSchema = z.object({
   paymentMethod: z
     .enum(["CASH", "BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER", "CARD", "OTHER"])
     .optional(),
+  account: z.enum(["BANK", "POCKET_MONEY"]).optional(),
+  bankId: z.string().cuid().nullable().optional(),
   source: z.string().min(1).optional(),
   note: z.string().optional(),
   occurredAt: z.string().datetime().optional(),
@@ -48,11 +50,21 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const body = parsed.data;
   const existing = await prisma.transaction.findFirst({ where: { id: params.id, userId } });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const nextAccount = body.account ?? existing.account;
+  const nextBankId = body.bankId === undefined ? existing.bankId : body.bankId;
+  if (nextAccount === "BANK" && !nextBankId) {
+    return NextResponse.json({ error: "Select the bank account for this transaction" }, { status: 400 });
+  }
+  if (body.bankId) {
+    const bank = await prisma.bank.findFirst({ where: { id: body.bankId, userId } });
+    if (!bank) return NextResponse.json({ error: "Bank account not found" }, { status: 400 });
+  }
 
   const updated = await prisma.transaction.update({
     where: { id: params.id },
     data: {
       ...body,
+      ...(nextAccount !== "BANK" ? { bankId: null } : {}),
       ...(body.occurredAt ? { occurredAt: new Date(body.occurredAt) } : {}),
     },
   });

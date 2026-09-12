@@ -54,7 +54,7 @@ export default function TransactionList({ transactions }: { transactions: Transa
                 dateStyle: "medium",
                 timeStyle: "short",
               })}{" "}
-              · {t.scope.charAt(0) + t.scope.slice(1).toLowerCase()} · {t.paymentMethod.replace("_", " ")}
+              · {t.account === "POCKET_MONEY" ? "Pocket money" : t.account === "SAVINGS" ? "Personal savings" : "Bank"} · {t.scope.charAt(0) + t.scope.slice(1).toLowerCase()} · {t.paymentMethod.replace("_", " ")}
             </p>
             {t.note && <p className="text-xs text-gray-400">{t.note}</p>}
           </div>

@@ -8,10 +8,14 @@ export default async function EditTransactionPage({ params }: { params: { id: st
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 
-  const transaction = await prisma.transaction.findFirst({
-    where: { id: params.id, userId: (session.user as any).id },
-    include: { category: true },
-  });
+  const userId = (session.user as any).id;
+  const [transaction, banks] = await Promise.all([
+    prisma.transaction.findFirst({
+      where: { id: params.id, userId },
+      include: { category: true },
+    }),
+    prisma.bank.findMany({ where: { userId }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+  ]);
 
   if (!transaction) notFound();
 
@@ -24,6 +28,7 @@ export default async function EditTransactionPage({ params }: { params: { id: st
           amount: Number(transaction.amount),
           occurredAt: transaction.occurredAt.toISOString(),
         }}
+        banks={banks}
       />
     </div>
   );

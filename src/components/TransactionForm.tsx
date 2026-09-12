@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Transaction } from "@/types";
 
 const PAYMENT_METHODS = ["CASH", "BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER", "CARD", "OTHER"];
 const SCOPES = ["PERSONAL", "FAMILY", "BUSINESS"];
+const ACCOUNTS = ["BANK", "POCKET_MONEY"];
 
 function getLocalDate(occurredAt?: string) {
   return occurredAt ? new Date(occurredAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
@@ -18,9 +20,17 @@ function getLocalTime(occurredAt?: string) {
 export default function TransactionForm({
   transaction,
   initialType,
+  initialAccount,
+  initialBankId,
+  returnTo,
+  banks,
 }: {
   transaction?: Transaction;
   initialType?: "INCOME" | "EXPENSE";
+  initialAccount?: "BANK" | "POCKET_MONEY";
+  initialBankId?: string;
+  returnTo?: string;
+  banks: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const [type, setType] = useState<"INCOME" | "EXPENSE">(transaction?.type ?? initialType ?? "EXPENSE");
@@ -28,6 +38,8 @@ export default function TransactionForm({
   const [source, setSource] = useState(transaction?.source ?? "");
   const [scope, setScope] = useState<string>(transaction?.scope ?? "PERSONAL");
   const [paymentMethod, setPaymentMethod] = useState<string>(transaction?.paymentMethod ?? "CASH");
+  const [account, setAccount] = useState<string>(transaction?.account ?? initialAccount ?? "BANK");
+  const [bankId, setBankId] = useState(transaction?.bankId ?? initialBankId ?? "");
   const [note, setNote] = useState(transaction?.note ?? "");
   const [date, setDate] = useState(() => getLocalDate(transaction?.occurredAt));
   const [time, setTime] = useState(() => getLocalTime(transaction?.occurredAt));
@@ -51,6 +63,8 @@ export default function TransactionForm({
           source,
           scope,
           paymentMethod,
+          account,
+          bankId: account === "BANK" ? bankId : undefined,
           note: note || undefined,
           occurredAt,
         }),
@@ -63,7 +77,7 @@ export default function TransactionForm({
       }
 
       if (transaction || !addAnother) {
-        router.push("/transactions");
+        router.push(returnTo ?? "/transactions");
         router.refresh();
       } else {
         setAmount("");
@@ -152,6 +166,24 @@ export default function TransactionForm({
         </div>
       </div>
 
+      <div>
+        <label className="block text-sm font-medium mb-1">Account</label>
+        <select value={account} onChange={(e) => setAccount(e.target.value)} className="w-full border rounded-lg px-3 py-2">
+          {ACCOUNTS.map((item) => <option key={item} value={item}>{item === "POCKET_MONEY" ? "Pocket money" : "Bank account"}</option>)}
+        </select>
+      </div>
+
+      {account === "BANK" && (
+        <div>
+          <div className="mb-1 flex items-center justify-between gap-3"><label className="block text-sm font-medium">Bank account</label><Link href="/bank" className="text-xs font-semibold text-brand hover:underline">Manage banks</Link></div>
+          <select required value={bankId} onChange={(e) => setBankId(e.target.value)} disabled={banks.length === 0} className="w-full border rounded-lg px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-50">
+            <option value="">{banks.length ? "Select a bank account" : "Add a bank account first"}</option>
+            {banks.map((bank) => <option key={bank.id} value={bank.id}>{bank.name}</option>)}
+          </select>
+          {banks.length === 0 && <p className="mt-1 text-xs text-expense">Add a bank account before recording a bank transaction.</p>}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Scope</label>
@@ -198,7 +230,7 @@ export default function TransactionForm({
       <div className="flex flex-col gap-2 sm:flex-row">
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || (account === "BANK" && !bankId)}
           className="flex-1 rounded-lg bg-brand py-2 font-medium text-white disabled:opacity-60"
         >
           {loading ? (transaction ? "Updating..." : "Saving...") : transaction ? "Update Transaction" : "Save Transaction"}
@@ -206,7 +238,7 @@ export default function TransactionForm({
         {!transaction && (
           <button
             type="button"
-            disabled={loading}
+            disabled={loading || (account === "BANK" && !bankId)}
             onClick={(event) => saveTransaction(event, true)}
             className="flex-1 rounded-lg border border-brand px-3 py-2 font-medium text-brand disabled:opacity-60"
           >

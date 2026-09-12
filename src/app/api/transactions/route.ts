@@ -12,6 +12,8 @@ const createSchema = z.object({
   paymentMethod: z
     .enum(["CASH", "BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER", "CARD", "OTHER"])
     .default("CASH"),
+  account: z.enum(["BANK", "POCKET_MONEY"]).default("BANK"),
+  bankId: z.string().cuid().optional(),
   source: z.string().min(1), // client/shop/family member name etc.
   note: z.string().optional(),
   occurredAt: z.string(), // ISO date-time string from the form (date + time combined)
@@ -26,6 +28,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url || "http://localhost:3000/api/transactions");
   const type = searchParams.get("type");
   const scope = searchParams.get("scope");
+  const account = searchParams.get("account");
   const from = searchParams.get("from");
   const to = searchParams.get("to");
 
@@ -34,6 +37,7 @@ export async function GET(req: Request) {
       userId: (session.user as any).id,
       ...(type ? { type: type as any } : {}),
       ...(scope ? { scope: scope as any } : {}),
+      ...(account ? { account: account as any } : {}),
       ...(from || to
         ? {
             occurredAt: {
@@ -63,9 +67,19 @@ export async function POST(req: Request) {
 
   const data = parsed.data;
 
+  if (data.account === "BANK" && !data.bankId) {
+    return NextResponse.json({ error: "Select the bank account for this transaction" }, { status: 400 });
+  }
+
+  if (data.bankId) {
+    const bank = await prisma.bank.findFirst({ where: { id: data.bankId, userId: (session.user as any).id } });
+    if (!bank) return NextResponse.json({ error: "Bank account not found" }, { status: 400 });
+  }
+
   const transaction = await prisma.transaction.create({
     data: {
       ...data,
+      bankId: data.account === "BANK" ? data.bankId : undefined,
       occurredAt: new Date(data.occurredAt),
       userId: (session.user as any).id,
     },
