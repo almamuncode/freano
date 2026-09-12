@@ -55,14 +55,14 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header className="border-b border-hairline bg-white/80 backdrop-blur-xl">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link href={logoHref} className="text-xl font-bold text-brand">
           <img className="w-36" src={darkMode ? "/icons/logo-dark.png" : "/logo.png"} alt="Freano" />
         </Link>
 
         <nav className="flex items-center gap-4 text-sm">
-          <button type="button" onClick={toggleTheme} aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"} className="rounded-full border border-gray-200 px-3 py-1.5 text-base text-gray-600 hover:text-brand dark:border-gray-700 dark:text-gray-300">
+          <button type="button" onClick={toggleTheme} aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"} className="rounded-full border border-hairline px-3 py-1.5 text-base text-gray-600 hover:text-brand dark:text-gray-300">
             {darkMode ? "☀" : "☾"}
           </button>
           {status === "authenticated" ? (

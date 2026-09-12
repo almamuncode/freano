@@ -8,27 +8,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        income: "#16a34a",
-        expense: "#dc2626",
+        income: "#16803c",
+        expense: "#d92d20",
         brand: {
-          DEFAULT: "#4f46e5",
-          light: "#818cf8",
-          dark: "#3730a3",
+          DEFAULT: "#0071e3",
+          light: "#5aa7f6",
+          dark: "#005bb5",
         },
-        // Ledger palette, used only in the admin panel
-        paper: "#F7F3E9",
-        ink: "#20293A",
+        paper: "#f5f5f7",
+        ink: "#1d1d1f",
         brass: {
-          DEFAULT: "#8A6324",
-          light: "#B08838",
+          DEFAULT: "#6e6e73",
+          light: "#86868b",
         },
-        sage: "#4B6B4F",
-        rust: "#8C3B2E",
-        hairline: "#DDD4BE",
+        sage: "#166534",
+        rust: "#b42318",
+        hairline: "#d2d2d7",
       },
       fontFamily: {
-        ledger: ["var(--font-ledger)", "serif"],
-        "ledger-sans": ["var(--font-ledger-sans)", "sans-serif"],
+        ledger: ["var(--font-ledger)", "Georgia", "serif"],
+        "ledger-sans": ["var(--font-ledger-sans)", "Helvetica Neue", "sans-serif"],
         "ledger-mono": ["var(--font-ledger-mono)", "monospace"],
       },
     },

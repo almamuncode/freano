@@ -14,7 +14,7 @@ export default async function Footer() {
   const homeHref = isAuthenticated ? "/dashboard" : "/";
 
   return (
-    <footer className="border-t border-hairline bg-[#20283a] text-white">
+    <footer className="border-t border-hairline bg-[#1d1d1f] text-white">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4 py-5 text-center sm:justify-between sm:px-6 sm:text-left">
         <div className="order-1">
           <Link href={homeHref} className="inline-block" aria-label="Freano home">
