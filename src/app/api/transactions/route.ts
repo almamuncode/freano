@@ -12,8 +12,9 @@ const createSchema = z.object({
   paymentMethod: z
     .enum(["CASH", "BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER", "CARD", "OTHER"])
     .default("CASH"),
-  account: z.enum(["BANK", "POCKET_MONEY"]).default("BANK"),
+  account: z.enum(["BANK", "POCKET_MONEY", "WALLET"]).default("BANK"),
   bankId: z.string().cuid().optional(),
+  walletId: z.string().cuid().optional(),
   source: z.string().min(1), // client/shop/family member name etc.
   note: z.string().optional(),
   occurredAt: z.string(), // ISO date-time string from the form (date + time combined)
@@ -70,16 +71,24 @@ export async function POST(req: Request) {
   if (data.account === "BANK" && !data.bankId) {
     return NextResponse.json({ error: "Select the bank account for this transaction" }, { status: 400 });
   }
+  if (data.account === "WALLET" && !data.walletId) {
+    return NextResponse.json({ error: "Select the wallet for this transaction" }, { status: 400 });
+  }
 
   if (data.bankId) {
     const bank = await prisma.bank.findFirst({ where: { id: data.bankId, userId: (session.user as any).id } });
     if (!bank) return NextResponse.json({ error: "Bank account not found" }, { status: 400 });
+  }
+  if (data.walletId) {
+    const wallet = await prisma.wallet.findFirst({ where: { id: data.walletId, userId: (session.user as any).id } });
+    if (!wallet) return NextResponse.json({ error: "Wallet not found" }, { status: 400 });
   }
 
   const transaction = await prisma.transaction.create({
     data: {
       ...data,
       bankId: data.account === "BANK" ? data.bankId : undefined,
+      walletId: data.account === "WALLET" ? data.walletId : undefined,
       occurredAt: new Date(data.occurredAt),
       userId: (session.user as any).id,
     },

@@ -53,11 +53,12 @@ export default async function DashboardPage() {
     };
   });
 
-  const accountBalance = (account: "BANK" | "SAVINGS" | "POCKET_MONEY") => accountTotals
+  const accountBalance = (account: "BANK" | "SAVINGS" | "POCKET_MONEY" | "WALLET") => accountTotals
     .filter((total) => total.account === account)
     .reduce((sum, total) => sum + (total.type === "INCOME" ? Number(total._sum.amount ?? 0) : -Number(total._sum.amount ?? 0)), 0);
   const bankBalance = accountBalance("BANK");
   const pocketMoneyBalance = accountBalance("POCKET_MONEY");
+  const walletBalance = accountBalance("WALLET");
   const totalBalance = accountTotals.reduce((sum, total) => sum + (total.type === "INCOME" ? Number(total._sum.amount ?? 0) : -Number(total._sum.amount ?? 0)), 0);
   const lentOutstanding = loans.filter((loan) => loan.direction === "LENT").reduce((sum, loan) => sum + Math.max(Number(loan.principal) * (1 + Number(loan.interestRate) / 100) - loan.payments.reduce((paid, payment) => paid + Number(payment.amount), 0), 0), 0);
   const borrowedOutstanding = loans.filter((loan) => loan.direction === "BORROWED").reduce((sum, loan) => sum + Math.max(Number(loan.principal) * (1 + Number(loan.interestRate) / 100) - loan.payments.reduce((paid, payment) => paid + Number(payment.amount), 0), 0), 0);
@@ -90,19 +91,21 @@ export default async function DashboardPage() {
             <div><p className="text-xs text-white/50">This month income</p><p className="mt-1 text-lg font-semibold text-[#9fe3a3]">+{formatMoney(monthIncome)}</p></div>
             <div><p className="text-xs text-white/50">This month expense</p><p className="mt-1 text-lg font-semibold text-[#f3aaa0]">-{formatMoney(monthExpense)}</p></div>
           </div>
-          <div className="mt-5 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2">
+          <div className="mt-5 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-3">
             <a href="/bank" className="border-l border-white/20 pl-3 transition hover:border-[#9fe3a3]"><p className="text-xs text-white/50">Bank accounts</p><p className="mt-1 text-base font-semibold text-white">{formatMoney(bankBalance)}</p></a>
             <a href="/pocket-money" className="border-l border-white/20 pl-3 transition hover:border-[#9fe3a3]"><p className="text-xs text-white/50">Pocket money</p><p className="mt-1 text-base font-semibold text-white">{formatMoney(pocketMoneyBalance)}</p></a>
+            <a href="/wallet" className="border-l border-white/20 pl-3 transition hover:border-[#9fe3a3]"><p className="text-xs text-white/50">Wallets</p><p className="mt-1 text-base font-semibold text-white">{formatMoney(walletBalance)}</p></a>
           </div>
         </section>
 
         <section className="card-surface p-6 sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Financial control center</p>
           <h2 className="mt-3 text-2xl font-bold text-ink">Stay in control of your finances</h2>
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <a href="/transactions/add?type=INCOME" className="rounded-xl bg-[#e7f4e8] p-4 text-sage"><span className="block text-xs font-semibold uppercase tracking-wider">Income</span><span className="mt-2 block text-lg font-bold">Add income +</span></a>
-            <a href="/transactions/add?type=EXPENSE" className="rounded-xl bg-[#fae9e5] p-4 text-rust"><span className="block text-xs font-semibold uppercase tracking-wider">Expense</span><span className="mt-2 block text-lg font-bold">Add expense -</span></a>
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <a href="/transactions/add?type=INCOME" className="rounded-xl bg-[#e7f4e8] p-5 text-sage transition hover:-translate-y-0.5"><span className="block text-xs font-semibold uppercase tracking-wider">Income</span><span className="mt-3 block text-lg font-bold">Add income +</span></a>
+            <a href="/transactions/add?type=EXPENSE" className="rounded-xl bg-[#fae9e5] p-5 text-rust transition hover:-translate-y-0.5"><span className="block text-xs font-semibold uppercase tracking-wider">Expense</span><span className="mt-3 block text-lg font-bold">Add expense -</span></a>
           </div>
+          <a href="/bills/pay" className="mt-4 flex items-center justify-between rounded-xl border border-[#e8d7aa] bg-[#fffcf5] px-5 py-4 text-brass transition hover:border-brass/50"><span><span className="block text-xs font-semibold uppercase tracking-wider">Payments</span><span className="mt-1 block font-bold">Pay a bill</span></span><span aria-hidden="true">-&gt;</span></a>
           <a href="/statement" className="mt-3 flex items-center justify-between rounded-xl bg-[#f5eddb] px-4 py-3 font-semibold text-brass">View full statement <span aria-hidden="true">-&gt;</span></a>
         </section>
       </div>

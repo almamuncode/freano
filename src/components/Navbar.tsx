@@ -55,7 +55,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="border-b border-hairline bg-white/80 backdrop-blur-xl">
+    <header className="relative z-50 border-b border-hairline bg-white/80 backdrop-blur-xl">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link href={logoHref} className="text-xl font-bold text-brand">
           <img className="w-36" src={darkMode ? "/icons/logo-dark.png" : "/logo.png"} alt="Freano" />
@@ -91,7 +91,7 @@ export default function Navbar() {
                   {profileImage ? <img src={profileImage} alt="" className="h-full w-full object-cover" /> : initials}
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 z-20 mt-2 w-48 rounded-xl border border-gray-200 bg-white p-2 shadow-lg">
+                  <div className="absolute right-0 z-[60] mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-lg">
                     <div className="border-b border-gray-100 px-3 py-2">
                       <p className="truncate font-medium text-ink">{user?.name || "Your profile"}</p>
                       <p className="truncate text-xs text-gray-500">{user?.email}</p>
@@ -100,6 +100,7 @@ export default function Navbar() {
                     <Link href="/settings" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Settings</Link>
                     <Link href="/statement" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Statement</Link>
                     <Link href="/transactions" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Transactions</Link>
+                    <Link href="/wallet" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Wallets</Link>
                     <Link href="/loans" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Loans</Link>
                     <Link href="/projects" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-50">Unpaid projects</Link>
                     <button onClick={() => signOut({ callbackUrl: "/login" })} className="w-full rounded-lg px-3 py-2 text-left text-red-600 hover:bg-red-50">Sign out</button>

@@ -36,6 +36,7 @@ enum Account {
   BANK
   SAVINGS
   POCKET_MONEY
+  WALLET
 }
 
 enum Role {
@@ -78,6 +79,7 @@ model User {
   transactions  Transaction[]
   categories    Category[]
   banks         Bank[]
+  wallets       Wallet[]
   passwordResetTokens PasswordResetToken[]
   loans         Loan[]
   projects      Project[]
@@ -124,6 +126,20 @@ model Bank {
   @@index([userId])
 }
 
+model Wallet {
+  id           String        @id @default(cuid())
+  name         String
+  details      String?
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
 model Transaction {
   id            String           @id @default(cuid())
   type          TransactionType
@@ -133,7 +149,9 @@ model Transaction {
   paymentMethod PaymentMethod    @default(CASH)
   account       Account          @default(BANK)
   bankId        String?
-  bank          Bank?            @relation(fields: [bankId], references: [id], onDelete: SetNull)
+  bank          Bank?            @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  walletId      String?
+  wallet        Wallet?          @relation(fields: [walletId], references: [id], onDelete: Cascade)
   transferId    String?
   isDeposit     Boolean          @default(false)
 
@@ -157,6 +175,7 @@ model Transaction {
   @@index([userId, type])
   @@index([userId, account])
   @@index([bankId])
+  @@index([walletId])
   @@index([userId, transferId])
 }
 

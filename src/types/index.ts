@@ -8,7 +8,7 @@ export type PaymentMethod =
   | "BANK_TRANSFER"
   | "CARD"
   | "OTHER";
-export type Account = "BANK" | "SAVINGS" | "POCKET_MONEY";
+export type Account = "BANK" | "SAVINGS" | "POCKET_MONEY" | "WALLET";
 
 export interface Category {
   id: string;
@@ -18,6 +18,12 @@ export interface Category {
 }
 
 export interface Bank {
+  id: string;
+  name: string;
+  details?: string | null;
+}
+
+export interface Wallet {
   id: string;
   name: string;
   details?: string | null;
@@ -33,6 +39,8 @@ export interface Transaction {
   account: Account;
   bankId?: string | null;
   bank?: Bank | null;
+  walletId?: string | null;
+  wallet?: Wallet | null;
   transferId?: string | null;
   isDeposit?: boolean;
   source: string;
