@@ -38,61 +38,90 @@ export default function RegisterPage() {
     <div className="max-w-sm mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4">
-        <input
-          type="text"
-          required
-          placeholder="Full name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-        <input
-          type="email"
-          required
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-        <input
-          type="tel"
-          required
-          pattern="(?:01[3-9][0-9]{8}|\+8801[3-9][0-9]{8}|008801[3-9][0-9]{8})"
-          placeholder="Phone number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-        <input
-          type="text"
-          placeholder="Profession (optional)"
-          value={profession}
-          onChange={(e) => setProfession(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-        <input
-          type="text"
-          placeholder="Current city (optional)"
-          value={currentCity}
-          onChange={(e) => setCurrentCity(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-        <input
-          type="date"
-          placeholder="Date of birth"
-          value={dateOfBirth}
-          onChange={(e) => setDateOfBirth(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-        <input
-          type="password"
-          required
-          minLength={6}
-          placeholder="Password (min 6 chars)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
+        <div>
+          <label htmlFor="name" className="mb-1 block text-sm text-gray-600">Full name</label>
+          <input
+            id="name"
+            type="text"
+            required
+            placeholder="Full name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="mb-1 block text-sm text-gray-600">Email</label>
+          <input
+            id="email"
+            type="email"
+            required
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="phone" className="mb-1 block text-sm text-gray-600">Phone number</label>
+          <input
+            id="phone"
+            type="tel"
+            required
+            pattern="(?:01[3-9][0-9]{8}|\+8801[3-9][0-9]{8}|008801[3-9][0-9]{8})"
+            placeholder="Phone number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="profession" className="mb-1 block text-sm text-gray-600">Profession (optional)</label>
+          <input
+            id="profession"
+            type="text"
+            placeholder="Profession (optional)"
+            value={profession}
+            onChange={(e) => setProfession(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="current-city" className="mb-1 block text-sm text-gray-600">Current city (optional)</label>
+          <input
+            id="current-city"
+            type="text"
+            placeholder="Current city (optional)"
+            value={currentCity}
+            onChange={(e) => setCurrentCity(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="date-of-birth" className="mb-1 block text-sm text-gray-600">
+            Date of birth
+          </label>
+          <input
+            id="date-of-birth"
+            type="date"
+            value={dateOfBirth}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="mb-1 block text-sm text-gray-600">Password (min 6 chars)</label>
+          <input
+            id="password"
+            type="password"
+            required
+            minLength={6}
+            placeholder="Password (min 6 chars)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
         {error && <p className="text-expense text-sm">{error}</p>}
         <button className="w-full bg-brand text-white py-2 rounded-lg font-medium">
           Register

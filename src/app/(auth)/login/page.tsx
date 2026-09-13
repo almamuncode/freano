@@ -33,25 +33,33 @@ export default function LoginPage() {
     <div className="max-w-sm mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-6 text-center">Log In</h1>
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4">
-        <input
-          type="email"
-          required
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
+        <div>
+          <label htmlFor="email" className="mb-1 block text-sm text-gray-600">Email</label>
+          <input
+            id="email"
+            type="email"
+            required
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
         <div className="-mt-2 text-right">
           <Link href="/forgot-password" className="text-sm text-brand hover:underline">Forgot password?</Link>
         </div>
-        <input
-          type="password"
-          required
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
-        />
+        <div>
+          <label htmlFor="password" className="mb-1 block text-sm text-gray-600">Password</label>
+          <input
+            id="password"
+            type="password"
+            required
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
         {error && <p className="text-expense text-sm">{error}</p>}
         <button className="w-full bg-brand text-white py-2 rounded-lg font-medium">
           Log In
