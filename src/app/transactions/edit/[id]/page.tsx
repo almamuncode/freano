@@ -9,12 +9,13 @@ export default async function EditTransactionPage({ params }: { params: { id: st
   if (!session?.user) redirect("/login");
 
   const userId = (session.user as any).id;
-  const [transaction, banks] = await Promise.all([
+  const [transaction, banks, wallets] = await Promise.all([
     prisma.transaction.findFirst({
       where: { id: params.id, userId },
       include: { category: true },
     }),
     prisma.bank.findMany({ where: { userId }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.wallet.findMany({ where: { userId }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
 
   if (!transaction) notFound();
@@ -29,6 +30,7 @@ export default async function EditTransactionPage({ params }: { params: { id: st
           occurredAt: transaction.occurredAt.toISOString(),
         }}
         banks={banks}
+        wallets={wallets}
       />
     </div>
   );
