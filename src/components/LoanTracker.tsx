@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 type Payment = { id: string; amount: number; paidAt: string; note?: string | null };
 type Loan = {
@@ -8,16 +9,16 @@ type Loan = {
   interestRate: number; dueDate?: string | null; status: "OPEN" | "PAID";
   note?: string | null; payments: Payment[];
 };
-type LoanForm = { direction: "LENT" | "BORROWED"; person: string; phone: string; principal: string; interestRate: string; dueDate: string; note: string };
+type LoanForm = { direction: "LENT" | "BORROWED"; person: string; phone: string; principal: string; interestRate: string; dueDate: string; note: string; account: "BANK" | "WALLET" | "POCKET_MONEY"; bankId: string; walletId: string };
 
-const emptyForm: LoanForm = { direction: "LENT", person: "", phone: "", principal: "", interestRate: "", dueDate: "", note: "" };
+const emptyForm: LoanForm = { direction: "LENT", person: "", phone: "", principal: "", interestRate: "", dueDate: "", note: "", account: "BANK", bankId: "", walletId: "" };
 const money = (value: number) => `৳${new Intl.NumberFormat("en-BD", { maximumFractionDigits: 0 }).format(value)}`;
 
 function formFromLoan(loan: Loan): LoanForm {
-  return { direction: loan.direction, person: loan.person, phone: loan.phone ?? "", principal: String(loan.principal), interestRate: String(loan.interestRate), dueDate: loan.dueDate ? loan.dueDate.slice(0, 10) : "", note: loan.note ?? "" };
+  return { direction: loan.direction, person: loan.person, phone: loan.phone ?? "", principal: String(loan.principal), interestRate: String(loan.interestRate), dueDate: loan.dueDate ? loan.dueDate.slice(0, 10) : "", note: loan.note ?? "", account: "BANK", bankId: "", walletId: "" };
 }
 
-export default function LoanTracker({ initialLoans }: { initialLoans: Loan[] }) {
+export default function LoanTracker({ initialLoans, banks, wallets }: { initialLoans: Loan[]; banks: { id: string; name: string }[]; wallets: { id: string; name: string }[] }) {
   const [loans, setLoans] = useState(initialLoans);
   const [form, setForm] = useState<LoanForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -61,10 +62,11 @@ export default function LoanTracker({ initialLoans }: { initialLoans: Loan[] }) 
       <label className="block text-sm font-medium">Person<input required value={form.person} onChange={(event) => updateField("person", event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Name of person or provider" /></label>
       <label className="block text-sm font-medium">BD mobile number<input required type="tel" value={form.phone} onChange={(event) => updateField("phone", event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="01712345678" pattern="(?:01[3-9]\d{8}|\+8801[3-9]\d{8}|008801[3-9]\d{8})" /></label>
       <div className="grid grid-cols-2 gap-3"><label className="block text-sm font-medium">Principal<input required type="number" min="1" step="0.01" value={form.principal} onChange={(event) => updateField("principal", event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="BDT" /></label><label className="block text-sm font-medium">Interest %<input type="number" min="0" step="0.01" value={form.interestRate} onChange={(event) => updateField("interestRate", event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="0" /></label></div>
+      {!editingId && <><label className="block text-sm font-medium">Money goes {form.direction === "LENT" ? "from" : "to"}<select value={form.account} onChange={(event) => updateField("account", event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2"><option value="BANK">Bank account</option><option value="WALLET">Wallet</option><option value="POCKET_MONEY">Pocket money</option></select></label>{form.account === "BANK" && <div><div className="flex items-center justify-between gap-3"><label className="block text-sm font-medium">Bank account</label><Link href="/bank" className="text-xs font-semibold text-brand">Manage banks</Link></div><select required value={form.bankId} onChange={(event) => updateField("bankId", event.target.value)} disabled={banks.length === 0} className="mt-1 w-full rounded-lg border px-3 py-2 disabled:bg-gray-50"><option value="">{banks.length ? "Select a bank account" : "Add a bank account first"}</option>{banks.map((bank) => <option key={bank.id} value={bank.id}>{bank.name}</option>)}</select></div>}{form.account === "WALLET" && <div><div className="flex items-center justify-between gap-3"><label className="block text-sm font-medium">Wallet</label><Link href="/wallet" className="text-xs font-semibold text-brand">Manage wallets</Link></div><select required value={form.walletId} onChange={(event) => updateField("walletId", event.target.value)} disabled={wallets.length === 0} className="mt-1 w-full rounded-lg border px-3 py-2 disabled:bg-gray-50"><option value="">{wallets.length ? "Select a wallet" : "Add a wallet first"}</option>{wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}</select></div>}</>}
       <label className="block text-sm font-medium">Due date<input type="date" value={form.dueDate} onChange={(event) => updateField("dueDate", event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
       <label className="block text-sm font-medium">Note<textarea value={form.note} onChange={(event) => updateField("note", event.target.value)} className="mt-1 w-full rounded-lg border px-3 py-2" rows={2} placeholder="Optional context" /></label>
       {message && <p className="text-sm text-brand">{message}</p>}
-      <div className="flex gap-2"><button className="flex-1 rounded-lg bg-brand py-2.5 font-semibold text-white">{editingId ? "Update loan" : "Save loan"}</button>{editingId && <button type="button" onClick={() => { setEditingId(null); setForm(emptyForm); }} className="rounded-lg border px-4 py-2.5 text-sm font-semibold">Cancel</button>}</div>
+      <div className="flex gap-2"><button disabled={!editingId && ((form.account === "BANK" && !form.bankId) || (form.account === "WALLET" && !form.walletId))} className="flex-1 rounded-lg bg-brand py-2.5 font-semibold text-white disabled:opacity-60">{editingId ? "Update loan" : "Save loan"}</button>{editingId && <button type="button" onClick={() => { setEditingId(null); setForm(emptyForm); }} className="rounded-lg border px-4 py-2.5 text-sm font-semibold">Cancel</button>}</div>
     </form>
     <div className="space-y-3">{loans.filter((loan) => loan.direction === directionFilter).length === 0 ? <div className="card-surface p-8 text-center text-sm text-ink/60">No {directionFilter === "LENT" ? "given" : "taken"} loans yet.</div> : loans.filter((loan) => loan.direction === directionFilter).map((loan) => {
       const totalDue = loan.principal * (1 + loan.interestRate / 100); const paid = loan.payments.reduce((sum, payment) => sum + payment.amount, 0); const remaining = Math.max(totalDue - paid, 0);
