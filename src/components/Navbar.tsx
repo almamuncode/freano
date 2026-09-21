@@ -15,6 +15,11 @@ export default function Navbar() {
   const logoHref = status === "authenticated" ? "/dashboard" : "/";
   const user = session?.user as { name?: string | null; email?: string | null; role?: string } | undefined;
   const initials = (user?.name || user?.email || "U").slice(0, 1).toUpperCase();
+  const primaryLinks = [
+    { href: "/dashboard", label: "Overview" },
+    { href: "/transactions", label: "Activity" },
+    { href: "/bank", label: "Accounts" },
+  ];
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("freano-theme");
@@ -55,26 +60,30 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="relative z-50 border-b border-hairline bg-white/80 backdrop-blur-xl">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href={logoHref} className="text-xl font-bold text-brand">
-          <img className="w-36" src={darkMode ? "/icons/logo-dark.png" : "/logo.png"} alt="Freano" />
+    <header className="sticky top-0 z-50 border-b border-white/70 bg-white/75 backdrop-blur-xl dark:border-hairline dark:bg-[#202329]/90">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <Link href={logoHref} className="shrink-0" aria-label="Freano home">
+          <img className="w-28 sm:w-32 dark:hidden" src="/logo.png" alt="Freano" />
+          <img className="hidden w-28 sm:w-32 dark:block" src="/icons/logo-dark.png" alt="Freano" />
         </Link>
 
-        <nav className="flex items-center gap-4 text-sm">
-          <button type="button" onClick={toggleTheme} aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"} className="rounded-full border border-hairline px-3 py-1.5 text-base text-gray-600 hover:text-brand dark:text-gray-300">
+        <nav className="flex items-center gap-2 text-sm sm:gap-3">
+          {status === "authenticated" && <div className="hidden items-center rounded-xl border border-hairline bg-white/70 p-1 dark:bg-[#202329] md:flex">
+            {primaryLinks.map((link) => <Link key={link.href} href={link.href} className={`${pathname === link.href || (link.href !== "/dashboard" && pathname?.startsWith(link.href)) ? "bg-brand text-white shadow-sm" : "text-ink/60 hover:text-ink"} rounded-lg px-3 py-1.5 text-xs font-semibold`}>{link.label}</Link>)}
+          </div>}
+          <button type="button" onClick={toggleTheme} aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"} className="flex h-9 w-9 items-center justify-center rounded-xl border border-hairline bg-white/70 text-base text-gray-600 hover:text-brand dark:text-gray-300">
             {darkMode ? "☀" : "☾"}
           </button>
           {status === "authenticated" ? (
             <>
-              <Link href="/dashboard" className={pathname === "/dashboard" ? "text-brand font-semibold" : "text-gray-500 hover:text-gray-800"}>Dashboard</Link>
+              <Link href="/dashboard" className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold md:hidden ${pathname === "/dashboard" ? "bg-brand/10 text-brand" : "text-ink/60 hover:text-brand"}`}>Home</Link>
               {(session.user as any)?.role === "ADMIN" && (
                 <Link
                   href="/admin/users"
                   className={
                     pathname?.startsWith("/admin")
                       ? "text-brand font-semibold"
-                      : "text-gray-500 hover:text-gray-800"
+                      : "text-gray-500 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white"
                   }
                 >
                   Admin
@@ -86,12 +95,12 @@ export default function Navbar() {
                   aria-label="Open profile menu"
                   aria-expanded={menuOpen}
                   onClick={() => setMenuOpen((open) => !open)}
-                  className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-brand font-semibold text-white ring-2 ring-white"
+                  className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-brand font-semibold text-white shadow-md shadow-brand/25 ring-2 ring-white"
                 >
                   {profileImage ? <img src={profileImage} alt="" className="h-full w-full object-cover" /> : initials}
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 z-[60] mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-lg">
+                  <div className="absolute right-0 z-[60] mt-3 w-56 rounded-2xl border border-hairline bg-white p-2 shadow-xl shadow-black/10 dark:bg-[#202329]">
                     <div className="border-b border-gray-100 px-3 py-2">
                       <p className="truncate font-medium text-ink">{user?.name || "Your profile"}</p>
                       <p className="truncate text-xs text-gray-500">{user?.email}</p>
@@ -110,11 +119,11 @@ export default function Navbar() {
             </>
           ) : status === "unauthenticated" ? (
             <>
-              <Link href="/login" className="text-gray-500 hover:text-gray-800">
+              <Link href="/login" className="hidden text-gray-500 hover:text-gray-800 sm:block">
                 Log in
               </Link>
-              <Link href="/register" className="text-brand font-medium">
-                Register
+              <Link href="/register" className="btn-primary px-3 py-2 sm:px-4">
+                Get started
               </Link>
             </>
           ) : null}

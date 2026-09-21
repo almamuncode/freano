@@ -30,9 +30,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-center">Log In</h1>
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4">
+    <div className="mx-auto mt-8 max-w-sm sm:mt-12">
+      <div className="mb-7 text-center"><p className="page-kicker">Welcome back</p><h1 className="mt-2 text-3xl font-bold tracking-tight">Log in to Freano</h1><p className="mt-2 text-sm text-ink/60">Your financial workspace is waiting.</p></div>
+      <form onSubmit={handleSubmit} className="form-card">
         <div>
           <label htmlFor="email" className="mb-1 block text-sm text-gray-600">Email</label>
           <input
@@ -42,7 +42,7 @@ export default function LoginPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full"
           />
         </div>
         <div className="-mt-2 text-right">
@@ -57,11 +57,11 @@ export default function LoginPage() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full"
           />
         </div>
         {error && <p className="text-expense text-sm">{error}</p>}
-        <button className="w-full bg-brand text-white py-2 rounded-lg font-medium">
+        <button className="btn-primary w-full">
           Log In
         </button>
       </form>

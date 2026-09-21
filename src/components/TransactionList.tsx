@@ -19,7 +19,7 @@ export default function TransactionList({ transactions }: { transactions: Transa
   }, [transactions]);
 
   if (visibleTransactions.length === 0) {
-    return <p className="text-gray-500 text-center py-8">No transactions yet.</p>;
+    return <div className="card-surface px-6 py-12 text-center"><div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/10 text-xl text-brand">✦</div><p className="mt-4 font-semibold text-ink">Your activity will appear here</p><p className="mt-1 text-sm text-ink/55">Add an income or expense to begin your financial timeline.</p></div>;
   }
 
   async function handleDelete(id: string) {
@@ -42,25 +42,26 @@ export default function TransactionList({ transactions }: { transactions: Transa
   }
 
   return (
-    <div className="bg-white rounded-xl shadow divide-y">
+    <div className="card-surface divide-y divide-hairline overflow-hidden">
       {visibleTransactions.map((t) => (
-        <div key={t.id} className="flex items-center justify-between gap-4 px-4 py-3">
-          <div className="min-w-0">
-            <p className="font-medium">
-              {t.category?.icon ?? (t.isDeposit ? "↳" : t.type === "INCOME" ? "💰" : "💸")} {t.isDeposit ? "Deposit: " : ""}{t.source}
+        <div key={t.id} className="flex items-center justify-between gap-3 px-4 py-4 transition hover:bg-brand/[0.025] sm:px-5">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-base ${t.type === "INCOME" ? "bg-income/10 text-income" : "bg-expense/10 text-expense"}`}>{t.category?.icon ?? (t.isDeposit ? "↳" : t.type === "INCOME" ? "+" : "−")}</span>
+            <div className="min-w-0"><p className="truncate font-semibold text-ink">
+              {t.isDeposit ? "Deposit: " : ""}{t.source}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="truncate text-xs text-ink/55">
               {new Date(t.occurredAt).toLocaleString("en-BD", {
                 dateStyle: "medium",
                 timeStyle: "short",
               })}{" "}
               · {t.account === "POCKET_MONEY" ? "Pocket money" : t.account === "SAVINGS" ? "Personal savings" : "Bank"} · {t.scope.charAt(0) + t.scope.slice(1).toLowerCase()} · {t.paymentMethod.replace("_", " ")}
             </p>
-            {t.note && <p className="text-xs text-gray-400">{t.note}</p>}
+            {t.note && <p className="truncate text-xs text-ink/40">{t.note}</p>}</div>
           </div>
           <div className="flex shrink-0 flex-col items-end gap-2">
             <span
-              className={`font-semibold ${t.type === "INCOME" ? "text-income" : "text-expense"}`}
+              className={`font-bold ${t.type === "INCOME" ? "text-income" : "text-expense"}`}
             >
               {t.type === "INCOME" ? "+" : "-"}
               {formatMoney(t.amount, t.currency)}

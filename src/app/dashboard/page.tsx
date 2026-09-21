@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import TransactionList from "@/components/TransactionList";
 import DashboardChart from "@/components/DashboardChart";
-import QuickCalculator from "@/components/QuickCalculator";
+import WeatherPanel from "@/components/WeatherPanel";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -75,29 +75,30 @@ export default async function DashboardPage() {
         <p className="text-sm font-medium text-ink/55">{now.toLocaleDateString("en-BD", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1.35fr_0.9fr]">
-        <section className="card-surface overflow-hidden bg-[#20293A] p-6 text-white sm:p-8">
+      <section className="overflow-hidden rounded-2xl border border-[#31415c] bg-[#172033] p-6 text-white shadow-xl shadow-[#172033]/20 sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-brand-light text-lg font-bold">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-brand-light text-lg font-bold shadow-lg shadow-brand/25">
                 {user?.image ? <img src={user.image} alt="" className="h-full w-full object-cover" /> : (user?.name ?? "U").slice(0, 1).toUpperCase()}
               </div>
-              <div><p className="text-sm text-white/60">Current balance</p><p className="text-xs text-white/45">All time</p></div>
+              <div><p className="text-sm font-medium text-white/70">Current balance</p><p className="mt-0.5 text-xs text-white/45">Across every account</p></div>
             </div>
-            <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70">Bangladeshi Taka</span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/70">BDT</span>
           </div>
-          <p className="mt-8 text-4xl font-bold tracking-tight sm:text-5xl">{formatMoney(totalBalance)}</p>
-          <div className="mt-8 grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
-            <div><p className="text-xs text-white/50">This month income</p><p className="mt-1 text-lg font-semibold text-[#9fe3a3]">+{formatMoney(monthIncome)}</p></div>
-            <div><p className="text-xs text-white/50">This month expense</p><p className="mt-1 text-lg font-semibold text-[#f3aaa0]">-{formatMoney(monthExpense)}</p></div>
+          <p className="mt-9 font-mono text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">{formatMoney(totalBalance)}</p>
+          <div className="mt-8 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4"><p className="text-xs text-white/50">This month income</p><p className="mt-1 text-lg font-semibold text-[#9fe3a3]">+{formatMoney(monthIncome)}</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4"><p className="text-xs text-white/50">This month expense</p><p className="mt-1 text-lg font-semibold text-[#f3aaa0]">-{formatMoney(monthExpense)}</p></div>
           </div>
           <div className="mt-5 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-3">
-            <a href="/bank" className="border-l border-white/20 pl-3 transition hover:border-[#9fe3a3]"><p className="text-xs text-white/50">Bank accounts</p><p className="mt-1 text-base font-semibold text-white">{formatMoney(bankBalance)}</p></a>
-            <a href="/pocket-money" className="border-l border-white/20 pl-3 transition hover:border-[#9fe3a3]"><p className="text-xs text-white/50">Pocket money</p><p className="mt-1 text-base font-semibold text-white">{formatMoney(pocketMoneyBalance)}</p></a>
-            <a href="/wallet" className="border-l border-white/20 pl-3 transition hover:border-[#9fe3a3]"><p className="text-xs text-white/50">Wallets</p><p className="mt-1 text-base font-semibold text-white">{formatMoney(walletBalance)}</p></a>
+            <a href="/bank" className="group rounded-xl border border-white/10 bg-black/10 p-3 transition hover:border-[#9fe3a3] hover:bg-white/10"><p className="text-xs text-white/50">Bank accounts</p><p className="mt-1 flex items-center justify-between gap-2 text-base font-semibold text-white"><span>{formatMoney(bankBalance)}</span><span className="text-white/40 transition-transform group-hover:translate-x-0.5" aria-hidden="true">-&gt;</span></p></a>
+            <a href="/pocket-money" className="group rounded-xl border border-white/10 bg-black/10 p-3 transition hover:border-[#9fe3a3] hover:bg-white/10"><p className="text-xs text-white/50">Pocket money</p><p className="mt-1 flex items-center justify-between gap-2 text-base font-semibold text-white"><span>{formatMoney(pocketMoneyBalance)}</span><span className="text-white/40 transition-transform group-hover:translate-x-0.5" aria-hidden="true">-&gt;</span></p></a>
+            <a href="/wallet" className="group rounded-xl border border-white/10 bg-black/10 p-3 transition hover:border-[#9fe3a3] hover:bg-white/10"><p className="text-xs text-white/50">Wallets</p><p className="mt-1 flex items-center justify-between gap-2 text-base font-semibold text-white"><span>{formatMoney(walletBalance)}</span><span className="text-white/40 transition-transform group-hover:translate-x-0.5" aria-hidden="true">-&gt;</span></p></a>
           </div>
-        </section>
+      </section>
 
+      <div className="grid gap-5 lg:items-start lg:grid-cols-2">
+        <div className="space-y-5">
         <section className="card-surface p-6 sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Financial control center</p>
           <h2 className="mt-3 text-2xl font-bold text-ink">Stay in control of your finances</h2>
@@ -106,21 +107,19 @@ export default async function DashboardPage() {
             <a href="/transactions/add?type=EXPENSE" className="rounded-xl bg-[#fae9e5] p-5 text-rust transition hover:-translate-y-0.5"><span className="block text-xs font-semibold uppercase tracking-wider">Expense</span><span className="mt-3 block text-lg font-bold">Add expense -</span></a>
           </div>
           <a href="/bills/pay" className="mt-4 flex items-center justify-between rounded-xl border border-[#e8d7aa] bg-[#fffcf5] px-5 py-4 text-brass transition hover:border-brass/50"><span><span className="block text-xs font-semibold uppercase tracking-wider">Payments</span><span className="mt-1 block font-bold">Pay a bill</span></span><span aria-hidden="true">-&gt;</span></a>
-          <a href="/statement" className="mt-3 flex items-center justify-between rounded-xl bg-[#f5eddb] px-4 py-3 font-semibold text-brass">View full statement <span aria-hidden="true">-&gt;</span></a>
         </section>
-      </div>
-
-      <section className="card-surface p-5 sm:p-6">
-        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end"><div><p className="text-sm font-semibold uppercase tracking-[0.16em] text-brass">Beyond your balance</p><h2 className="mt-2 text-xl font-bold text-ink">Money still in motion</h2><p className="mt-1 text-sm text-ink/60">Track obligations and expected income before they become surprises.</p></div><div className="flex gap-3 text-sm"><a href="/loans" className="font-semibold text-brand">Loans -&gt;</a><a href="/projects" className="font-semibold text-brand">Projects -&gt;</a></div></div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-3"><a href="/loans" className="rounded-xl border border-hairline bg-[#f8fbf8] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-income">People owe you</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(lentOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Open loans you gave</p></a><a href="/loans" className="rounded-xl border border-hairline bg-[#fff9f7] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-rust">You owe people</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(borrowedOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Open loans you took</p></a><a href="/projects" className="rounded-xl border border-hairline bg-[#fffcf5] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-brass">Project receivables</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(projectOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Payment still outstanding</p></a></div>
-      </section>
-
-      <div className="grid gap-5 lg:grid-cols-[1.35fr_0.9fr]">
         <section className="card-surface p-5 sm:p-6">
           <div className="mb-5 flex items-end justify-between"><div><h2 className="text-lg font-bold text-ink">Monthly movement</h2><p className="mt-1 text-sm text-ink/55">Income and expenses in {now.toLocaleDateString("en-BD", { month: "long" })}</p></div><div className="flex gap-3 text-xs text-ink/60"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-income" />Income</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-expense" />Expense</span></div></div>
           <DashboardChart data={chartData} />
         </section>
-        <section className="card-surface p-5 sm:p-6"><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Monthly rhythm</p><h2 className="mt-2 text-lg font-bold text-ink">Make the next decision clearly</h2><p className="mt-1 text-sm text-ink/60">Use your current month numbers as a simple planning guide.</p></div><span className="text-2xl text-brand" aria-hidden="true">◌</span></div><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-xl border border-hairline p-3"><p className="text-xs text-ink/55">Net this month</p><p className={`mt-1 text-lg font-bold ${monthIncome - monthExpense >= 0 ? "text-brand" : "text-ink"}`}>{formatMoney(monthIncome - monthExpense)}</p></div><div className="rounded-xl border border-hairline p-3"><p className="text-xs text-ink/55">Transactions</p><p className="mt-1 text-lg font-bold text-ink">{monthTransactions.length}</p></div></div><QuickCalculator /></section>
+      </div>
+      <div className="space-y-5">
+      <section className="card-surface p-5 sm:p-6">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end"><div><p className="text-sm font-semibold uppercase tracking-[0.16em] text-brass">Beyond your balance</p><h2 className="mt-2 text-xl font-bold text-ink">Money still in motion</h2><p className="mt-1 text-sm text-ink/60">Track obligations and expected income before they become surprises.</p></div><div className="flex gap-3 text-sm"><a href="/loans" className="font-semibold text-brand">Loans -&gt;</a><a href="/projects" className="font-semibold text-brand">Projects -&gt;</a></div></div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3"><a href="/loans" className="rounded-xl border border-hairline bg-[#f8fbf8] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-income">People owe you</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(lentOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Open loans you gave</p></a><a href="/loans" className="rounded-xl border border-hairline bg-[#fff9f7] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-rust">You owe people</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(borrowedOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Open loans you took</p></a><a href="/projects" className="rounded-xl border border-hairline bg-[#fffcf5] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-brass">Project receivables</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(projectOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Payment still outstanding</p></a></div>
+      </section>
+        <section className="card-surface p-5 sm:p-6"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Monthly rhythm</p><h2 className="mt-2 text-lg font-bold text-ink">Make the next decision clearly</h2><p className="mt-1 text-sm text-ink/60">Use your current month numbers as a simple planning guide.</p></div><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-xl border border-hairline p-3"><p className="text-xs text-ink/55">Net this month</p><p className={`mt-1 text-lg font-bold ${monthIncome - monthExpense >= 0 ? "text-brand" : "text-ink"}`}>{formatMoney(monthIncome - monthExpense)}</p></div><div className="rounded-xl border border-hairline p-3"><p className="text-xs text-ink/55">Transactions</p><p className="mt-1 text-lg font-bold text-ink">{monthTransactions.length}</p></div></div></section><WeatherPanel />
+      </div>
       </div>
 
       <div>

@@ -6,6 +6,10 @@
   color-scheme: light;
 }
 
+html.dark {
+  color-scheme: dark;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -13,7 +17,7 @@
 
   body {
     @apply min-h-screen bg-paper text-ink antialiased;
-    background-image: linear-gradient(180deg, #ffffff 0, #f5f5f7 34rem);
+    background-image: radial-gradient(circle at 82% -10%, rgba(42, 113, 214, 0.13), transparent 28rem), linear-gradient(180deg, #ffffff 0, #f4f6fa 34rem);
   }
 
   * {
@@ -33,13 +37,25 @@
     @apply transition-colors duration-200;
   }
 
+  input, textarea, select {
+    @apply rounded-xl border border-hairline bg-white px-3.5 py-2.5 text-ink outline-none transition duration-200;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    @apply border-brand ring-4 ring-brand/10;
+  }
+
   .dark body {
     @apply bg-[#000000] text-gray-100;
     background-image: linear-gradient(180deg, #252a32 0, #16181d 21rem, #000000 46rem);
   }
 
   .dark .bg-white,
-  .dark .bg-white\/80 {
+  .dark .bg-white\/80,
+  .dark .bg-white\/85,
+  .dark .bg-white\/75,
+  .dark .bg-white\/70,
+  .dark .bg-white\/60 {
     background-color: #202329;
   }
 
@@ -177,13 +193,22 @@
     background: #30353d;
   }
 
+  .dark .landing-hero {
+    background: #000000;
+  }
+
 }
 
 @layer components {
   .card-surface {
-    @apply rounded-xl border border-hairline bg-white/80 shadow-sm;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.035);
+    @apply rounded-2xl border border-white/80 bg-white/85 shadow-sm backdrop-blur-sm;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03), 0 12px 32px rgba(16, 24, 40, 0.06);
   }
+
+  .page-kicker { @apply text-[11px] font-bold uppercase tracking-[0.2em] text-brand; }
+  .btn-primary { @apply inline-flex items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand/20 transition hover:-translate-y-0.5 hover:bg-brand-dark hover:shadow-brand/30 focus:outline-none focus:ring-4 focus:ring-brand/20; }
+  .btn-secondary { @apply inline-flex items-center justify-center rounded-xl border border-hairline bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-brand/30 hover:text-brand; }
+  .form-card { @apply card-surface space-y-5 p-5 sm:p-7; }
 
   .account-balance-heading {
     color: #ffffff;

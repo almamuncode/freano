@@ -3,13 +3,14 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="landing-page -mx-4 -mt-6 overflow-hidden">
-      <section className="landing-hero relative border-b border-hairline px-6 pb-16 pt-14 sm:px-10 sm:pt-20">
+      <section className="landing-hero relative border-b border-hairline px-6 pb-20 pt-16 sm:px-10 sm:pt-24">
         <div className="absolute right-[-5rem] top-[-6rem] h-64 w-64 rounded-full border-[24px] border-brand/10 sm:right-10 sm:top-[-8rem] sm:h-96 sm:w-96" />
-        <div className="relative mx-auto grid max-w-5xl items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
+        <div className="absolute bottom-0 left-[12%] h-40 w-40 rounded-full bg-brand/[0.07] blur-3xl" />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <div className="mb-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em] text-brass">
-              <span className="h-px w-8 bg-brass" />
-              The freelancer&apos;s ledger
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-brand/15 bg-white/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-brand shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+              Built for independent work
             </div>
             <h1 className="max-w-2xl text-5xl font-bold leading-[0.98] tracking-tight text-ink sm:text-7xl">
               Your work is personal. Your money should be clear.
@@ -21,7 +22,7 @@ export default function Home() {
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Link
                 href="/register"
-                className="rounded-lg bg-brand px-6 py-3.5 font-semibold text-white shadow-lg shadow-brand/20 transition-transform hover:-translate-y-0.5 hover:bg-brand-dark"
+              className="btn-primary px-6 py-3.5"
               >
                 Start your ledger <span aria-hidden="true">-&gt;</span>
               </Link>
@@ -39,7 +40,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="landing-card relative mx-auto w-full max-w-md rotate-1 rounded-xl border border-hairline p-5 shadow-[0_22px_60px_rgba(32,41,58,0.14)] sm:p-7">
+          <div className="landing-card relative mx-auto w-full max-w-md rotate-1 rounded-3xl border border-white/80 p-5 shadow-[0_26px_70px_rgba(32,41,58,0.16)] sm:p-7">
             <div className="flex items-start justify-between border-b border-hairline pb-5">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brass">One clear view</p>
@@ -65,18 +66,18 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-5xl gap-8 px-6 py-12 sm:grid-cols-3 sm:px-10 sm:py-16">
-        <div>
+      <section className="mx-auto grid max-w-6xl gap-4 px-6 py-12 sm:grid-cols-3 sm:px-10 sm:py-16">
+        <div className="rounded-2xl border border-white bg-white/60 p-5 shadow-sm">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand">01 / Capture</p>
           <h2 className="text-xl font-bold text-ink">Every taka has a place.</h2>
           <p className="mt-2 text-sm leading-6 text-ink/60">Log income and spending in seconds, with categories that match real life.</p>
         </div>
-        <div>
+        <div className="rounded-2xl border border-white bg-white/60 p-5 shadow-sm">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand">02 / Understand</p>
           <h2 className="text-xl font-bold text-ink">See the whole picture.</h2>
           <p className="mt-2 text-sm leading-6 text-ink/60">Separate personal, family, and business money without losing the thread.</p>
         </div>
-        <div>
+        <div className="rounded-2xl border border-white bg-white/60 p-5 shadow-sm">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand">03 / Move forward</p>
           <h2 className="text-xl font-bold text-ink">Make calmer decisions.</h2>
           <p className="mt-2 text-sm leading-6 text-ink/60">A simple statement gives you confidence for the month ahead.</p>
