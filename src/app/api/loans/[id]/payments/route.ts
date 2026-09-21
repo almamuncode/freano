@@ -21,12 +21,15 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     return NextResponse.json({ error: "Repayment cannot be greater than the remaining balance" }, { status: 400 });
   }
 
-  const payment = await prisma.loanPayment.create({
-    data: { amount: parsed.data.amount, note: parsed.data.note || null, loanId: loan.id },
-  });
-  await prisma.loan.update({
-    where: { id: loan.id },
-    data: { status: paid + parsed.data.amount >= totalDue - 0.01 ? "PAID" : "OPEN" },
-  });
-  return NextResponse.json(payment, { status: 201 });
+  const [payment, updatedLoan] = await prisma.$transaction([
+    prisma.loanPayment.create({
+      data: { amount: parsed.data.amount, note: parsed.data.note || null, loanId: loan.id },
+    }),
+    prisma.loan.update({
+      where: { id: loan.id },
+      data: { status: paid + parsed.data.amount >= totalDue - 0.01 ? "PAID" : "OPEN" },
+      select: { status: true },
+    }),
+  ]);
+  return NextResponse.json({ ...payment, status: updatedLoan.status }, { status: 201 });
 }
