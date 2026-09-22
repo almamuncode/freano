@@ -38,7 +38,7 @@ html.dark {
   }
 
   input, textarea, select {
-    @apply rounded-xl border border-hairline bg-white px-3.5 py-2.5 text-ink outline-none transition duration-200;
+    @apply min-w-0 max-w-full rounded-xl border border-hairline bg-white px-3.5 py-2.5 text-ink outline-none transition duration-200;
   }
 
   input:focus, textarea:focus, select:focus {
@@ -261,6 +261,20 @@ html.dark {
 @media (max-width: 1023px) {
   body:has(.mobile-app-nav) .app-main { padding-bottom: 6.5rem; }
   body:has(.mobile-app-nav) footer { padding-bottom: 4.5rem; }
+}
+
+@media (max-width: 420px) {
+  .grid-cols-2,
+  .grid-cols-\[1fr_100px\] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .earnings-form .grid-cols-2,
+  .earnings-form .grid-cols-\[1fr_100px\] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
 }
 
 @keyframes app-reveal {

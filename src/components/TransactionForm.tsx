@@ -104,7 +104,7 @@ export default function TransactionForm({
   }
 
   return (
-    <form onSubmit={(event) => saveTransaction(event)} className="form-card max-w-md">
+    <form onSubmit={(event) => saveTransaction(event)} className="form-card min-w-0 w-full max-w-md">
       {/* Income vs Expense toggle */}
       <div className="flex rounded-lg overflow-hidden border">
         <button
@@ -154,7 +154,7 @@ export default function TransactionForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium mb-1">Date</label>
           <input
@@ -208,7 +208,7 @@ export default function TransactionForm({
 
       {!transaction && type === "INCOME" && account === "POCKET_MONEY" && <div><label className="block text-sm font-medium mb-1">Money comes from</label><select value={pocketSource} onChange={(e) => setPocketSource(e.target.value)} className="w-full border rounded-lg px-3 py-2">{POCKET_SOURCES.map((item) => <option key={item} value={item}>{item === "BANK" ? "Bank account" : item === "PROJECT_FEE" ? "Project fee" : item === "OTHER" ? "Other income" : item.charAt(0) + item.slice(1).toLowerCase()}</option>)}</select>{pocketSource === "BANK" && <select required value={bankId} onChange={(e) => setBankId(e.target.value)} disabled={banks.length === 0} className="mt-3 w-full border rounded-lg px-3 py-2 disabled:bg-gray-50"><option value="">{banks.length ? "Select the bank to withdraw from" : "Add a bank account first"}</option>{banks.map((bank) => <option key={bank.id} value={bank.id}>{bank.name}</option>)}</select>}</div>}
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium mb-1">Scope</label>
           <select

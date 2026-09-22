@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 interface InstallPromptEvent extends Event {
@@ -10,50 +9,75 @@ interface InstallPromptEvent extends Event {
 }
 
 export default function InstallPrompt() {
-  const pathname = usePathname();
   const { status } = useSession();
   const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
+  const [isIos, setIsIos] = useState(false);
 
   useEffect(() => {
-    if (pathname !== "/" || status !== "unauthenticated") return;
+    if (status === "loading") return;
+    const standalone = window.matchMedia("(display-mode: standalone)").matches || Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
+    if (standalone || window.localStorage.getItem("freano-installed") === "true") return;
 
-    const standalone = window.matchMedia("(display-mode: standalone)").matches || (window.navigator as Navigator & { standalone?: boolean }).standalone;
-    if (!standalone) setVisible(true);
-
-    const handleInstallAvailable = (event: Event) => {
-      setInstallEvent(event as InstallPromptEvent);
-      setVisible(true);
+    setIsIos(/iphone|ipad|ipod/i.test(window.navigator.userAgent));
+    setVisible(true);
+    setExpanded(window.localStorage.getItem("freano-install-intro-seen") !== "true");
+    const handleInstallAvailable = (event: Event) => { setInstallEvent(event as InstallPromptEvent); setVisible(true); };
+    const handleCustomInstall = () => {
+      const saved = (window as Window & { freanoInstallEvent?: Event }).freanoInstallEvent;
+      if (saved) handleInstallAvailable(saved);
     };
-    const savedInstallEvent = (window as Window & { freanoInstallEvent?: Event }).freanoInstallEvent;
-    if (savedInstallEvent) handleInstallAvailable(savedInstallEvent);
+    const saved = (window as Window & { freanoInstallEvent?: Event }).freanoInstallEvent;
+    if (saved) handleInstallAvailable(saved);
+    const handleInstalled = () => { window.localStorage.setItem("freano-installed", "true"); setVisible(false); };
     window.addEventListener("beforeinstallprompt", handleInstallAvailable);
-    window.addEventListener("freano-install-available", () => handleInstallAvailable((window as Window & { freanoInstallEvent?: Event }).freanoInstallEvent!));
-    return () => window.removeEventListener("beforeinstallprompt", handleInstallAvailable);
-  }, [pathname, status]);
+    window.addEventListener("freano-install-available", handleCustomInstall);
+    window.addEventListener("appinstalled", handleInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleInstallAvailable);
+      window.removeEventListener("freano-install-available", handleCustomInstall);
+      window.removeEventListener("appinstalled", handleInstalled);
+    };
+  }, [status]);
 
   if (!visible) return null;
 
   async function installApp() {
-    if (!installEvent) {
-      setHelpVisible(true);
-      return;
+    if (!installEvent) { setHelpVisible(true); return; }
+    await installEvent.prompt();
+    const choice = await installEvent.userChoice;
+    if (choice.outcome === "accepted") {
+      window.localStorage.setItem("freano-installed", "true");
+      setVisible(false);
+    } else {
+      setExpanded(false);
     }
-    await installEvent!.prompt();
-    await installEvent!.userChoice;
     setInstallEvent(null);
-    setVisible(false);
   }
 
+  function collapse() {
+    window.localStorage.setItem("freano-install-intro-seen", "true");
+    setHelpVisible(false);
+    setExpanded(false);
+  }
+
+  if (!expanded) return (
+    <button type="button" onClick={() => setExpanded(true)} className="fixed bottom-24 right-4 z-[60] rounded-2xl border border-white/15 bg-[#111714] p-1.5 shadow-xl transition hover:-translate-y-0.5 hover:shadow-2xl lg:bottom-5" aria-label="Install Freano" title="Install Freano">
+      <img src="/icons/icon-dark-192.png" alt="" className="h-10 w-10 rounded-xl" />
+    </button>
+  );
+
   return (
-    <div className="fixed bottom-5 right-5 z-30 max-w-[calc(100vw-2rem)] rounded-2xl border border-brand/20 bg-white p-2 pl-4 text-sm font-semibold text-ink shadow-xl dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-      <div className="flex items-center gap-2">
-        <span>Add to Home</span>
-        <button type="button" onClick={installApp} className="rounded-full bg-brand px-3 py-1.5 text-white hover:bg-brand-dark">Add</button>
-        <button type="button" aria-label="Dismiss install prompt" onClick={() => setVisible(false)} className="px-1 text-gray-400 hover:text-gray-700 dark:hover:text-white">×</button>
+    <aside className="fixed inset-x-3 bottom-24 z-[60] mx-auto max-w-xs rounded-2xl border border-white/10 bg-[#111714]/95 p-3 text-white shadow-2xl backdrop-blur-xl lg:inset-x-auto lg:bottom-5 lg:right-5 lg:mx-0" aria-label="Install Freano">
+      <div className="flex items-center gap-3">
+        <img src="/icons/icon-dark-192.png" alt="" className="h-11 w-11 rounded-xl" />
+        <div className="min-w-0 flex-1"><p className="text-sm font-bold">Keep Freano on your home screen</p><p className="mt-0.5 text-[11px] text-white/55">Open your finances faster, like a regular app.</p></div>
+        <button type="button" aria-label="Collapse install prompt" onClick={collapse} className="self-start px-1 text-xl leading-none text-white/45 hover:text-white">×</button>
       </div>
-      {helpVisible && <p className="max-w-xs px-2 pb-1 pt-2 text-xs font-normal text-gray-500">Open your browser menu and choose &quot;Add to Home Screen&quot;.</p>}
-    </div>
+      <button type="button" onClick={installApp} className="mt-3 w-full rounded-xl bg-[#78d94f] px-4 py-2.5 text-sm font-bold text-[#132014] hover:bg-[#89e662]">{installEvent ? "Install Freano" : "Show install steps"}</button>
+      {helpVisible && <p className="mt-2 rounded-lg bg-white/[0.06] px-3 py-2 text-xs font-normal leading-5 text-white/70">{isIos ? "Tap the Share button in Safari, then choose “Add to Home Screen”." : "Open your browser menu and choose “Install app” or “Add to Home screen”."}</p>}
+    </aside>
   );
 }

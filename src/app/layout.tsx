@@ -18,8 +18,11 @@ export const metadata: Metadata = {
   applicationName: "Freano",
   formatDetection: { telephone: false },
   icons: {
-    icon: "/icons/icon.png",
-    apple: "/icons/icon2.png",
+    icon: [
+      { url: "/icons/icon-dark-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-dark-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icons/icon-dark-192.png",
   },
 };
 

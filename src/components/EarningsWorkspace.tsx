@@ -39,8 +39,8 @@ export default function EarningsWorkspace({ initialEarnings, banks, wallets }: {
     setEarnings((current) => current.filter((item) => item.id !== id));
   }
 
-  return <div className="grid gap-6 xl:grid-cols-[380px_1fr]">
-    <form onSubmit={save} className="card-surface h-fit space-y-4 p-5 sm:p-6">
+  return <div className="grid min-w-0 gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
+    <form onSubmit={save} className="earnings-form card-surface min-w-0 h-fit space-y-4 p-5 sm:p-6">
       <div><h2 className="text-lg font-bold">Add freelance earning</h2><p className="mt-1 text-sm text-ink/55">Track the gross amount now and receive it later.</p></div>
       <label className="block text-sm font-medium">Income source<select value={form.sourceType} onChange={(e) => { const value = e.target.value; setForm((current) => ({ ...current, sourceType: value, platform: value === "MARKETPLACE" ? "Upwork" : value === "CREATOR_PLATFORM" ? "YouTube" : "" })); }} className="mt-1 w-full"><option value="MARKETPLACE">Freelance marketplace</option><option value="CREATOR_PLATFORM">Creator platform</option><option value="DIRECT_CLIENT">Direct client</option><option value="OTHER">Other</option></select></label>
       <label className="block text-sm font-medium">Platform or source{platformOptions.length ? <select value={form.platform} onChange={(e) => field("platform", e.target.value)} className="mt-1 w-full">{platformOptions.map((name) => <option key={name}>{name}</option>)}</select> : <input required value={form.platform} onChange={(e) => field("platform", e.target.value)} className="mt-1 w-full" placeholder={form.sourceType === "DIRECT_CLIENT" ? "Direct client" : "Income source"}/>}</label>
