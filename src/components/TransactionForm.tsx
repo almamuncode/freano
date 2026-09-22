@@ -155,24 +155,24 @@ export default function TransactionForm({
       </div>
 
       <div className="grid min-w-0 gap-4 sm:grid-cols-2">
-        <div>
+        <div className="min-w-0">
           <label className="block text-sm font-medium mb-1">Date</label>
           <input
             type="date"
             required
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2"
+            className="min-w-0 max-w-full w-full border rounded-lg px-3 py-2"
           />
         </div>
-        <div>
+        <div className="min-w-0">
           <label className="block text-sm font-medium mb-1">Time</label>
           <input
             type="time"
             required
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2"
+            className="min-w-0 max-w-full w-full border rounded-lg px-3 py-2"
           />
         </div>
       </div>
