@@ -16,6 +16,12 @@ const profileSchema = z.object({
     .string()
     .max(70000, "Profile picture must be 50 KB or smaller")
     .refine((value) => value === "" || /^data:image\/(jpeg|png|gif|webp);base64,/.test(value), "Unsupported profile picture")
+    .refine((value) => {
+      if (!value) return true;
+      const base64 = value.split(",")[1] ?? "";
+      const padding = base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0;
+      return Math.floor((base64.length * 3) / 4) - padding <= 50 * 1024;
+    }, "Profile picture must be 50 KB or smaller")
     .optional(),
 });
 

@@ -3,10 +3,60 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const MAX_PROFILE_IMAGE_BYTES = 50 * 1024;
+
+function canvasToBlob(canvas: HTMLCanvasElement, quality: number) {
+  return new Promise<Blob>((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Could not process this image")), "image/webp", quality));
+}
+
+function blobToDataUrl(blob: Blob) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Could not read the resized image"));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function resizeProfileImage(file: File) {
+  if (!file.type.startsWith("image/")) throw new Error("Choose a valid image file.");
+  if (file.size > 15 * 1024 * 1024) throw new Error("The original image must be smaller than 15 MB.");
+
+  const bitmap = await createImageBitmap(file);
+  const cropSize = Math.min(bitmap.width, bitmap.height);
+  const sourceX = (bitmap.width - cropSize) / 2;
+  const sourceY = (bitmap.height - cropSize) / 2;
+  let outputSize = 512;
+  let result: Blob | null = null;
+
+  while (outputSize >= 192) {
+    const canvas = document.createElement("canvas");
+    canvas.width = outputSize;
+    canvas.height = outputSize;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Image resizing is not supported in this browser.");
+    context.drawImage(bitmap, sourceX, sourceY, cropSize, cropSize, 0, 0, outputSize, outputSize);
+
+    for (let quality = 0.88; quality >= 0.34; quality -= 0.08) {
+      result = await canvasToBlob(canvas, quality);
+      if (result.size <= MAX_PROFILE_IMAGE_BYTES) {
+        bitmap.close();
+        return { dataUrl: await blobToDataUrl(result), size: outputSize, bytes: result.size };
+      }
+    }
+    outputSize -= 64;
+  }
+
+  bitmap.close();
+  throw new Error("This image could not be compressed below 50 KB. Try another photo.");
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [processingImage, setProcessingImage] = useState(false);
+  const [imageInfo, setImageInfo] = useState("");
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -57,6 +107,22 @@ export default function ProfilePage() {
 
   const handleChange = (key: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleProfileImage = async (file?: File) => {
+    if (!file) return;
+    setProcessingImage(true);
+    setError("");
+    setImageInfo("");
+    try {
+      const resized = await resizeProfileImage(file);
+      setForm((prev) => ({ ...prev, image: resized.dataUrl }));
+      setImageInfo(`Square ${resized.size}×${resized.size}px · ${Math.ceil(resized.bytes / 1024)} KB`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to resize this image");
+    } finally {
+      setProcessingImage(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -118,21 +184,12 @@ export default function ProfilePage() {
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/gif,image/webp"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  if (file.size > 50 * 1024) {
-                    setError("Profile picture must be 50 KB or smaller.");
-                    e.target.value = "";
-                    return;
-                  }
-                  const reader = new FileReader();
-                  reader.onload = () => setForm((prev) => ({ ...prev, image: String(reader.result) }));
-                  reader.readAsDataURL(file);
-                }}
+                disabled={processingImage}
+                onChange={(e) => { void handleProfileImage(e.target.files?.[0]); e.target.value = ""; }}
                 className="block w-full text-sm"
               />
-              <p className="mt-1 text-xs text-gray-500">JPEG, PNG, GIF, or WebP. Maximum 50 KB.</p>
+              <p className="mt-1 text-xs text-gray-500">{processingImage ? "Cropping and compressing…" : "Automatically cropped square and compressed below 50 KB."}</p>
+              {imageInfo && <p className="mt-1 text-xs font-semibold text-brand">Ready · {imageInfo}</p>}
             </div>
           )}
         </div>
@@ -182,7 +239,7 @@ export default function ProfilePage() {
           </dl>
         )}
 
-        {editing && <button type="submit" disabled={saving} className="w-full rounded-lg bg-brand px-4 py-2.5 font-medium text-white disabled:opacity-70">{saving ? "Saving..." : "Update profile"}</button>}
+        {editing && <button type="submit" disabled={saving || processingImage} className="w-full rounded-lg bg-brand px-4 py-2.5 font-medium text-white disabled:opacity-70">{processingImage ? "Processing image…" : saving ? "Saving..." : "Update profile"}</button>}
       </form>
 
     </div>

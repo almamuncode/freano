@@ -9,7 +9,7 @@ export default function DashboardChart({ data }: { data: ChartPoint[] }) {
   const maxValue = useMemo(() => Math.max(...data.map((item) => Math.max(item.income, item.expense)), 100), [data]);
 
   return (
-    <div className="h-64 w-full">
+    <div className="h-64 min-w-0 w-full overflow-hidden">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 5, right: 4, left: -20, bottom: 0 }}>
           <defs>

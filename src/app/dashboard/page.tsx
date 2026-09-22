@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import TransactionList from "@/components/TransactionList";
 import DashboardChart from "@/components/DashboardChart";
-import WeatherPanel from "@/components/WeatherPanel";
+import BudgetHealthCard from "@/components/BudgetHealthCard";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -14,8 +14,9 @@ export default async function DashboardPage() {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-  const [user, transactions, monthTransactions, loans, projects, accountTotals] = await Promise.all([
+  const [user, transactions, monthTransactions, projects, earnings, accountTotals] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, image: true } }),
     prisma.transaction.findMany({
       where: { userId },
@@ -28,8 +29,12 @@ export default async function DashboardPage() {
       orderBy: { occurredAt: "asc" },
       select: { type: true, amount: true, occurredAt: true },
     }),
-    prisma.loan.findMany({ where: { userId, status: "OPEN" }, include: { payments: true } }),
     prisma.project.findMany({ where: { userId, status: { not: "PAID" } } }),
+    prisma.freelanceEarning.findMany({
+      where: { userId, status: { not: "RECEIVED" } },
+      select: { id: true, platform: true, title: true, netAmountBdt: true, expectedPayoutAt: true, status: true },
+      orderBy: { createdAt: "desc" },
+    }),
     prisma.transaction.groupBy({ by: ["account", "type"], where: { userId }, _sum: { amount: true } }),
   ]);
 
@@ -60,35 +65,42 @@ export default async function DashboardPage() {
   const pocketMoneyBalance = accountBalance("POCKET_MONEY");
   const walletBalance = accountBalance("WALLET");
   const totalBalance = accountTotals.reduce((sum, total) => sum + (total.type === "INCOME" ? Number(total._sum.amount ?? 0) : -Number(total._sum.amount ?? 0)), 0);
-  const lentOutstanding = loans.filter((loan) => loan.direction === "LENT").reduce((sum, loan) => sum + Math.max(Number(loan.principal) * (1 + Number(loan.interestRate) / 100) - loan.payments.reduce((paid, payment) => paid + Number(payment.amount), 0), 0), 0);
-  const borrowedOutstanding = loans.filter((loan) => loan.direction === "BORROWED").reduce((sum, loan) => sum + Math.max(Number(loan.principal) * (1 + Number(loan.interestRate) / 100) - loan.payments.reduce((paid, payment) => paid + Number(payment.amount), 0), 0), 0);
   const projectOutstanding = projects.reduce((sum, project) => sum + Math.max(Number(project.agreedAmount) - Number(project.paidAmount), 0), 0);
+  const pendingPayouts = earnings.reduce((sum, earning) => sum + Number(earning.netAmountBdt), 0);
+  const upcomingEarnings = [...earnings]
+    .sort((a, b) => {
+      if (!a.expectedPayoutAt) return 1;
+      if (!b.expectedPayoutAt) return -1;
+      return a.expectedPayoutAt.getTime() - b.expectedPayoutAt.getTime();
+    })
+    .slice(0, 4);
 
   return (
-    <div className="space-y-7">
+    <div className="min-w-0 space-y-6 overflow-x-hidden">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brass">Your financial home</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink">Good to see you, {user?.name?.split(" ")[0] ?? "there"}.</h1>
-          <p className="mt-1 text-sm text-ink/60">Here is your money at a glance.</p>
+          <p className="page-kicker">Financial overview</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink">Good {now.getHours() < 12 ? "morning" : now.getHours() < 18 ? "afternoon" : "evening"}, {user?.name?.split(" ")[0] ?? "there"}.</h1>
+          <p className="mt-1 text-sm text-ink/60">Here&apos;s a clear view of your money today.</p>
         </div>
         <p className="text-sm font-medium text-ink/55">{now.toLocaleDateString("en-BD", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
       </div>
 
-      <section className="overflow-hidden rounded-2xl border border-[#31415c] bg-[#172033] p-6 text-white shadow-xl shadow-[#172033]/20 sm:p-8">
-          <div className="flex items-start justify-between gap-4">
+      <section className="relative overflow-hidden rounded-[24px] border border-[#3b7d35] bg-[linear-gradient(125deg,#17231a_0%,#214b27_56%,#4b963b_100%)] p-6 text-white shadow-xl shadow-[#18351d]/20 sm:p-8">
+          <div className="pointer-events-none absolute -right-16 -top-28 h-72 w-72 rounded-full border-[38px] border-[#8bed61]/10" />
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-brand-light text-lg font-bold shadow-lg shadow-brand/25">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-[#79d956] text-lg font-bold text-[#132014] shadow-lg shadow-black/20">
                 {user?.image ? <img src={user.image} alt="" className="h-full w-full object-cover" /> : (user?.name ?? "U").slice(0, 1).toUpperCase()}
               </div>
               <div><p className="text-sm font-medium text-white/70">Current balance</p><p className="mt-0.5 text-xs text-white/45">Across every account</p></div>
             </div>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/70">BDT</span>
+            <span className="rounded-full border border-white/15 bg-black/10 px-3 py-1 text-[11px] font-medium text-white/80">BDT • All accounts</span>
           </div>
-          <p className="mt-9 font-mono text-4xl font-bold tracking-tight tabular-nums sm:text-5xl">{formatMoney(totalBalance)}</p>
+          <p className="mt-9 break-words font-mono text-3xl font-bold tracking-tight tabular-nums min-[380px]:text-4xl sm:text-5xl">{formatMoney(totalBalance)}</p>
           <div className="mt-8 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4"><p className="text-xs text-white/50">This month income</p><p className="mt-1 text-lg font-semibold text-[#9fe3a3]">+{formatMoney(monthIncome)}</p></div>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-4"><p className="text-xs text-white/50">This month expense</p><p className="mt-1 text-lg font-semibold text-[#f3aaa0]">-{formatMoney(monthExpense)}</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/10 p-4 backdrop-blur"><p className="text-xs text-white/60">This month income</p><p className="mt-1 text-lg font-semibold text-[#aef58f]">+{formatMoney(monthIncome)}</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/10 p-4 backdrop-blur"><p className="text-xs text-white/60">This month expense</p><p className="mt-1 text-lg font-semibold text-[#ffc3b9]">-{formatMoney(monthExpense)}</p></div>
           </div>
           <div className="mt-5 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-3">
             <a href="/bank" className="group rounded-xl border border-white/10 bg-black/10 p-3 transition hover:border-[#9fe3a3] hover:bg-white/10"><p className="text-xs text-white/50">Bank accounts</p><p className="mt-1 flex items-center justify-between gap-2 text-base font-semibold text-white"><span>{formatMoney(bankBalance)}</span><span className="text-white/40 transition-transform group-hover:translate-x-0.5" aria-hidden="true">-&gt;</span></p></a>
@@ -97,41 +109,46 @@ export default async function DashboardPage() {
           </div>
       </section>
 
-      <div className="grid gap-5 lg:items-start lg:grid-cols-2">
-        <div className="space-y-5">
-        <section className="card-surface p-6 sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Financial control center</p>
-          <h2 className="mt-3 text-2xl font-bold text-ink">Stay in control of your finances</h2>
-          <div className="mt-6 grid grid-cols-2 gap-4">
-            <a href="/transactions/add?type=INCOME" className="rounded-xl bg-[#e7f4e8] p-5 text-sage transition hover:-translate-y-0.5"><span className="block text-xs font-semibold uppercase tracking-wider">Income</span><span className="mt-3 block text-lg font-bold">Add income +</span></a>
-            <a href="/transactions/add?type=EXPENSE" className="rounded-xl bg-[#fae9e5] p-5 text-rust transition hover:-translate-y-0.5"><span className="block text-xs font-semibold uppercase tracking-wider">Expense</span><span className="mt-3 block text-lg font-bold">Add expense -</span></a>
-          </div>
-          <a href="/bills/pay" className="mt-4 flex items-center justify-between rounded-xl border border-[#e8d7aa] bg-[#fffcf5] px-5 py-4 text-brass transition hover:border-brass/50"><span><span className="block text-xs font-semibold uppercase tracking-wider">Payments</span><span className="mt-1 block font-bold">Pay a bill</span></span><span aria-hidden="true">-&gt;</span></a>
-        </section>
+      <div className="grid min-w-0 gap-3 sm:grid-cols-3">
+        <a href="/earnings" className="card-surface min-w-0 p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-brand">Pending payouts</p><p className="mt-2 break-words text-2xl font-bold">{formatMoney(pendingPayouts)}</p><p className="mt-1 text-xs text-ink/50">Marketplace and creator income →</p></a>
+        <a href="/projects" className="card-surface min-w-0 p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-[#9a6c00]">Client receivables</p><p className="mt-2 break-words text-2xl font-bold">{formatMoney(projectOutstanding)}</p><p className="mt-1 text-xs text-ink/50">Unpaid project work →</p></a>
+        <a href="/transactions/add?type=EXPENSE" className="card-surface p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-rust">Quick action</p><p className="mt-2 text-lg font-bold">Add an expense</p><p className="mt-1 text-xs text-ink/50">Keep this month accurate →</p></a>
+      </div>
+
+      <div className="grid min-w-0 gap-5 lg:items-start lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <div className="min-w-0 space-y-5">
         <section className="card-surface p-5 sm:p-6">
-          <div className="mb-5 flex items-end justify-between"><div><h2 className="text-lg font-bold text-ink">Monthly movement</h2><p className="mt-1 text-sm text-ink/55">Income and expenses in {now.toLocaleDateString("en-BD", { month: "long" })}</p></div><div className="flex gap-3 text-xs text-ink/60"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-income" />Income</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-expense" />Expense</span></div></div>
+          <div className="mb-5 flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end"><div className="min-w-0"><h2 className="text-lg font-bold text-ink">Monthly movement</h2><p className="mt-1 text-sm text-ink/55">Income and expenses in {now.toLocaleDateString("en-BD", { month: "long" })}</p></div><div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-ink/60"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-income" />Income</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-expense" />Expense</span><span className={`max-w-full truncate rounded-full px-2.5 py-1 font-bold ${monthIncome - monthExpense >= 0 ? "bg-[#eef8eb] text-sage" : "bg-[#fff2ef] text-rust"}`}>Net {formatMoney(monthIncome - monthExpense)}</span></div></div>
           <DashboardChart data={chartData} />
         </section>
+        <section>
+          <div className="mb-3 flex items-center justify-between"><div><h2 className="text-lg font-bold text-ink">Recent transactions</h2><p className="mt-0.5 text-xs text-ink/50">Your latest account activity</p></div><a href="/transactions" className="text-sm font-semibold text-brand hover:text-brand-dark">View all →</a></div>
+          <TransactionList transactions={transactions.map((t) => ({ ...t, amount: Number(t.amount), occurredAt: t.occurredAt.toISOString() }))} />
+        </section>
       </div>
-      <div className="space-y-5">
-      <section className="card-surface p-5 sm:p-6">
-        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end"><div><p className="text-sm font-semibold uppercase tracking-[0.16em] text-brass">Beyond your balance</p><h2 className="mt-2 text-xl font-bold text-ink">Money still in motion</h2><p className="mt-1 text-sm text-ink/60">Track obligations and expected income before they become surprises.</p></div><div className="flex gap-3 text-sm"><a href="/loans" className="font-semibold text-brand">Loans -&gt;</a><a href="/projects" className="font-semibold text-brand">Projects -&gt;</a></div></div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-3"><a href="/loans" className="rounded-xl border border-hairline bg-[#f8fbf8] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-income">People owe you</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(lentOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Open loans you gave</p></a><a href="/loans" className="rounded-xl border border-hairline bg-[#fff9f7] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-rust">You owe people</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(borrowedOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Open loans you took</p></a><a href="/projects" className="rounded-xl border border-hairline bg-[#fffcf5] p-4 transition hover:-translate-y-0.5"><p className="text-xs font-semibold uppercase tracking-wider text-brass">Project receivables</p><p className="mt-2 text-2xl font-bold text-ink">{formatMoney(projectOutstanding)}</p><p className="mt-1 text-xs text-ink/55">Payment still outstanding</p></a></div>
-      </section>
-        <section className="card-surface p-5 sm:p-6"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">Monthly rhythm</p><h2 className="mt-2 text-lg font-bold text-ink">Make the next decision clearly</h2><p className="mt-1 text-sm text-ink/60">Use your current month numbers as a simple planning guide.</p></div><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-xl border border-hairline p-3"><p className="text-xs text-ink/55">Net this month</p><p className={`mt-1 text-lg font-bold ${monthIncome - monthExpense >= 0 ? "text-brand" : "text-ink"}`}>{formatMoney(monthIncome - monthExpense)}</p></div><div className="rounded-xl border border-hairline p-3"><p className="text-xs text-ink/55">Transactions</p><p className="mt-1 text-lg font-bold text-ink">{monthTransactions.length}</p></div></div></section><WeatherPanel />
+      <div className="min-w-0 space-y-5">
+        <BudgetHealthCard income={monthIncome} expenses={monthExpense} dayOfMonth={now.getDate()} daysInMonth={daysInMonth} />
+        <section className="card-surface p-5">
+          <p className="page-kicker">Quick actions</p>
+          <div className="mt-4 grid gap-2">
+            <a href="/earnings" className="group relative overflow-hidden rounded-xl bg-[linear-gradient(110deg,#236b2d_0%,#3c963e_55%,#78d94f_100%)] px-4 py-4 text-white shadow-lg shadow-brand/20 transition hover:-translate-y-0.5 hover:shadow-brand/30 dark:border dark:border-[#78d94f]/30 dark:bg-[linear-gradient(110deg,#17381e_0%,#2e7f35_58%,#5abf42_100%)]">
+              <span className="pointer-events-none absolute -right-8 -top-12 h-28 w-28 rounded-full border-[18px] border-white/10" />
+              <span className="relative flex items-center justify-between gap-3"><span className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-xl font-light">+</span><span><span className="block text-sm font-bold">Add freelance earning</span><span className="mt-0.5 block text-[11px] text-white/70">Marketplace, creator, or client income</span></span></span><span className="text-lg transition-transform group-hover:translate-x-0.5">→</span></span>
+            </a>
+            <a href="/transactions/add?type=EXPENSE" className="flex items-center justify-between rounded-xl bg-[#fff2ef] px-4 py-3 text-sm font-semibold text-rust">Add expense <span>+</span></a>
+            <a href="/projects" className="flex items-center justify-between rounded-xl border border-hairline px-4 py-3 text-sm font-semibold">Track client project <span>→</span></a>
+          </div>
+        </section>
+        <section className="card-surface p-5 sm:p-6">
+          <div className="flex items-start justify-between gap-3"><div><p className="page-kicker">Upcoming money</p><h2 className="mt-2 text-lg font-bold text-ink">Payouts on the way</h2></div><a href="/earnings" className="text-xs font-semibold text-brand">Manage →</a></div>
+          {upcomingEarnings.length > 0 ? <div className="mt-5 divide-y divide-hairline">
+            {upcomingEarnings.map((earning) => <a key={earning.id} href="/earnings" className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"><div className="flex min-w-0 items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#eef8eb] text-xs font-bold text-sage">{earning.platform.slice(0, 1).toUpperCase()}</span><div className="min-w-0"><p className="truncate text-sm font-semibold text-ink">{earning.platform}</p><p className="truncate text-xs text-ink/45">{earning.expectedPayoutAt ? `Expected ${earning.expectedPayoutAt.toLocaleDateString("en-BD", { day: "numeric", month: "short" })}` : earning.status === "AVAILABLE" ? "Available to withdraw" : "Date not set"}</p></div></div><p className="shrink-0 text-sm font-bold text-income">{formatMoney(Number(earning.netAmountBdt))}</p></a>)}
+          </div> : <div className="mt-5 rounded-xl border border-dashed border-hairline p-5 text-center"><p className="text-sm font-semibold text-ink">No payouts scheduled</p><p className="mt-1 text-xs text-ink/50">Add an earning with an expected date to see it here.</p><a href="/earnings" className="mt-3 inline-flex text-xs font-bold text-brand">Add earning →</a></div>}
+          <div className="mt-5 flex items-center justify-between rounded-xl bg-[#eef8eb] px-4 py-3 dark:bg-[#17382a]"><span className="text-xs font-semibold text-sage">Total still on the way</span><span className="font-bold text-ink dark:text-white">{formatMoney(pendingPayouts)}</span></div>
+        </section>
       </div>
       </div>
 
-      <div>
-        <div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold text-ink">Recent transactions</h2><a href="/transactions" className="text-sm font-semibold text-brand hover:text-brand-dark">View all</a></div>
-        <TransactionList
-          transactions={transactions.map((t) => ({
-            ...t,
-            amount: Number(t.amount),
-            occurredAt: t.occurredAt.toISOString(),
-          }))}
-        />
-      </div>
     </div>
   );
 }

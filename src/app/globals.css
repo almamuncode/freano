@@ -17,7 +17,7 @@ html.dark {
 
   body {
     @apply min-h-screen bg-paper text-ink antialiased;
-    background-image: radial-gradient(circle at 82% -10%, rgba(42, 113, 214, 0.13), transparent 28rem), linear-gradient(180deg, #ffffff 0, #f4f6fa 34rem);
+    background-image: radial-gradient(circle at 84% -12%, rgba(115, 217, 77, 0.12), transparent 30rem), linear-gradient(180deg, #fbfcfb 0, #f3f6f2 38rem);
   }
 
   * {
@@ -45,9 +45,13 @@ html.dark {
     @apply border-brand ring-4 ring-brand/10;
   }
 
+  button, a { -webkit-tap-highlight-color: transparent; }
+
+  ::selection { background: rgba(115, 217, 77, 0.32); color: #101612; }
+
   .dark body {
     @apply bg-[#000000] text-gray-100;
-    background-image: linear-gradient(180deg, #252a32 0, #16181d 21rem, #000000 46rem);
+    background-image: radial-gradient(circle at 78% -10%, rgba(95, 202, 67, 0.1), transparent 28rem), linear-gradient(180deg, #171d19 0, #0c100e 46rem);
   }
 
   .dark .bg-white,
@@ -92,22 +96,29 @@ html.dark {
 
   .dark .card-surface {
     background-color: rgba(32, 35, 41, 0.9);
-    border-color: #4a505a;
+    border-color: #2d342f;
     box-shadow: 0 1px 1px rgba(255, 255, 255, 0.04) inset, 0 14px 34px rgba(0, 0, 0, 0.18);
   }
 
   .dark .bg-\[\#e7f4e8\],
-  .dark .bg-\[\#f8fbf8\] {
+  .dark .bg-\[\#f8fbf8\],
+  .dark .bg-\[\#eef8eb\],
+  .dark .bg-\[\#edf8e9\],
+  .dark .bg-\[\#e8f7e3\],
+  .dark .bg-\[\#f6faf4\] {
     background-color: #17382a;
   }
 
   .dark .bg-\[\#fae9e5\],
-  .dark .bg-\[\#fff9f7\] {
+  .dark .bg-\[\#fff9f7\],
+  .dark .bg-\[\#fff2ef\],
+  .dark .bg-\[\#fff0ed\] {
     background-color: #41282a;
   }
 
   .dark .bg-\[\#f5eddb\],
-  .dark .bg-\[\#fffcf5\] {
+  .dark .bg-\[\#fffcf5\],
+  .dark .bg-\[\#fff7df\] {
     background-color: #35322a;
   }
 
@@ -123,8 +134,12 @@ html.dark {
     color: #e9c778;
   }
 
+  .dark .text-\[\#8b6812\] {
+    color: #f3d778;
+  }
+
   .dark .text-brand {
-    color: #64b5ff;
+    color: #82df5d;
   }
 
   .dark .text-income {
@@ -165,7 +180,26 @@ html.dark {
   .dark .border-gray-200,
   .dark .border-gray-300,
   .dark .border-hairline {
-    border-color: #4a505a;
+    border-color: #303832;
+  }
+
+  .dark .divide-hairline > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgba(255, 255, 255, 0.065);
+  }
+
+  .dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+  .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgba(255, 255, 255, 0.055);
+  }
+
+  .dark .recharts-cartesian-grid-horizontal line {
+    stroke: rgba(255, 255, 255, 0.09);
+  }
+
+  .dark .recharts-tooltip-wrapper .recharts-default-tooltip {
+    background-color: #202329 !important;
+    border-color: #303832 !important;
+    color: #f3f4f6 !important;
   }
 
   .dark input,
@@ -173,7 +207,7 @@ html.dark {
   .dark select {
     background-color: #171a1f;
     color: #f3f4f6;
-    border-color: #4b5563;
+    border-color: #343d37;
   }
 
   .dark .hover\:bg-gray-50:hover {
@@ -201,8 +235,8 @@ html.dark {
 
 @layer components {
   .card-surface {
-    @apply rounded-2xl border border-white/80 bg-white/85 shadow-sm backdrop-blur-sm;
-    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03), 0 12px 32px rgba(16, 24, 40, 0.06);
+    @apply rounded-[20px] border border-hairline bg-white/90 shadow-sm backdrop-blur-sm;
+    box-shadow: 0 1px 2px rgba(13, 24, 16, 0.025), 0 12px 34px rgba(23, 48, 27, 0.055);
   }
 
   .page-kicker { @apply text-[11px] font-bold uppercase tracking-[0.2em] text-brand; }
@@ -217,6 +251,16 @@ html.dark {
   .app-reveal {
     animation: app-reveal 320ms ease-out both;
   }
+}
+
+@media (min-width: 1024px) {
+  body:has(.app-sidebar) .app-main { margin-left: 250px; padding-left: 2rem; padding-right: 2rem; }
+  body:has(.app-sidebar) footer { margin-left: 250px; }
+}
+
+@media (max-width: 1023px) {
+  body:has(.mobile-app-nav) .app-main { padding-bottom: 6.5rem; }
+  body:has(.mobile-app-nav) footer { padding-bottom: 4.5rem; }
 }
 
 @keyframes app-reveal {

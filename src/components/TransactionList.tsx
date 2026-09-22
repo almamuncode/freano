@@ -44,7 +44,7 @@ export default function TransactionList({ transactions }: { transactions: Transa
   return (
     <div className="card-surface divide-y divide-hairline overflow-hidden">
       {visibleTransactions.map((t) => (
-        <div key={t.id} className="flex items-center justify-between gap-3 px-4 py-4 transition hover:bg-brand/[0.025] sm:px-5">
+        <div key={t.id} className="flex min-w-0 items-start justify-between gap-2 px-3 py-4 transition hover:bg-brand/[0.025] min-[380px]:gap-3 min-[380px]:px-4 sm:items-center sm:px-5">
           <div className="flex min-w-0 items-center gap-3">
             <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-base ${t.type === "INCOME" ? "bg-income/10 text-income" : "bg-expense/10 text-expense"}`}>{t.category?.icon ?? (t.isDeposit ? "↳" : t.type === "INCOME" ? "+" : "−")}</span>
             <div className="min-w-0"><p className="truncate font-semibold text-ink">
@@ -59,9 +59,9 @@ export default function TransactionList({ transactions }: { transactions: Transa
             </p>
             {t.note && <p className="truncate text-xs text-ink/40">{t.note}</p>}</div>
           </div>
-          <div className="flex shrink-0 flex-col items-end gap-2">
+          <div className="flex max-w-[40%] shrink-0 flex-col items-end gap-2 sm:max-w-none">
             <span
-              className={`font-bold ${t.type === "INCOME" ? "text-income" : "text-expense"}`}
+              className={`break-all text-right text-sm font-bold sm:text-base ${t.type === "INCOME" ? "text-income" : "text-expense"}`}
             >
               {t.type === "INCOME" ? "+" : "-"}
               {formatMoney(t.amount, t.currency)}

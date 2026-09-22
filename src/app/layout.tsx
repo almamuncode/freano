@@ -18,13 +18,13 @@ export const metadata: Metadata = {
   applicationName: "Freano",
   formatDetection: { telephone: false },
   icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/icon-192.png",
+    icon: "/icons/icon.png",
+    apple: "/icons/icon2.png",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f5f5f7",
+  themeColor: "#111714",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ServiceWorkerRegister />
           <InstallPrompt />
           <Navbar />
-          <main className="app-reveal mx-auto min-h-[calc(100vh-4.5rem)] max-w-6xl px-4 py-7 sm:px-6 sm:py-9">{children}</main>
+          <main className="app-main app-reveal mx-auto min-h-[calc(100vh-4.5rem)] max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8">{children}</main>
           <Footer />
         </Providers>
       </body>

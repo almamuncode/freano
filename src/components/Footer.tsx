@@ -18,7 +18,7 @@ export default async function Footer() {
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4 py-5 text-center sm:justify-between sm:px-6 sm:text-left">
         <div className="order-1">
           <Link href={homeHref} className="inline-block" aria-label="Freano home">
-            <img src="/logo.png" alt="Freano" className="w-28 dark:hidden" />
+            <img src="/icons/logo.png" alt="Freano" className="w-28 dark:hidden" />
             <img src="/icons/logo-dark.png" alt="Freano" className="hidden w-28 dark:block" />
           </Link>
         </div>

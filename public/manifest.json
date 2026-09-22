@@ -1,31 +1,25 @@
 {
   "name": "Freano — Money Management for Freelancers",
   "short_name": "Freano",
-  "description": "Track your income, expenses, family and personal costs — all in one place.",
+  "description": "Track freelance earnings, payouts, expenses, and accounts in one place.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#F9FAFB",
-  "theme_color": "#4f46e5",
+  "background_color": "#f4f6f3",
+  "theme_color": "#111714",
   "id": "/",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
+      "src": "/icons/icon.png",
+      "sizes": "81x81",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
+      "src": "/icons/icon2.png",
+      "sizes": "81x81",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }

@@ -8,6 +8,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 enum TransactionType {
@@ -60,6 +61,19 @@ enum ProjectPaymentStatus {
   PAID
 }
 
+enum EarningSourceType {
+  MARKETPLACE
+  CREATOR_PLATFORM
+  DIRECT_CLIENT
+  OTHER
+}
+
+enum EarningStatus {
+  PENDING
+  AVAILABLE
+  RECEIVED
+}
+
 model User {
   id            String        @id @default(cuid())
   name          String
@@ -83,6 +97,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   loans         Loan[]
   projects      Project[]
+  earnings      FreelanceEarning[]
 }
 
 model PasswordResetToken {
@@ -170,6 +185,7 @@ model Transaction {
 
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
+  freelanceEarning FreelanceEarning?
 
   @@index([userId, occurredAt])
   @@index([userId, type])
@@ -177,6 +193,34 @@ model Transaction {
   @@index([bankId])
   @@index([walletId])
   @@index([userId, transferId])
+}
+
+model FreelanceEarning {
+  id               String            @id @default(cuid())
+  sourceType       EarningSourceType
+  platform         String
+  title            String
+  client           String?
+  grossAmount      Decimal           @db.Decimal(12, 2)
+  platformFee      Decimal           @default(0) @db.Decimal(12, 2)
+  otherFee         Decimal           @default(0) @db.Decimal(12, 2)
+  currency         String            @default("USD")
+  exchangeRate     Decimal           @default(1) @db.Decimal(12, 4)
+  netAmountBdt     Decimal           @db.Decimal(12, 2)
+  status           EarningStatus     @default(PENDING)
+  expectedPayoutAt DateTime?
+  receivedAt       DateTime?
+  note             String?
+  transactionId    String?           @unique
+  transaction      Transaction?      @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, platform])
+  @@index([userId, expectedPayoutAt])
 }
 
 model Loan {

@@ -16,5 +16,6 @@ out
 # macOS
 .DS_Store
 
-# Logs
-*.logtsconfig.tsbuildinfo
+# Logs and generated TypeScript state
+*.log
+tsconfig.tsbuildinfo
