@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { showToast } from "@/lib/toast";
 
 export default function BankDepositForm({ bankId }: { bankId: string }) {
   const router = useRouter();
@@ -18,9 +19,10 @@ export default function BankDepositForm({ bankId }: { bankId: string }) {
       const response = await fetch(`/api/banks/${bankId}/deposits`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: Number(amount), source, note: note || undefined, occurredAt: new Date().toISOString() }) });
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error(data?.error ?? "Could not record deposit");
-      setAmount(""); setSource(""); setNote(""); router.refresh();
+      setAmount(""); setSource(""); setNote(""); showToast("Deposit added"); router.refresh();
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Could not record deposit");
+      const message = requestError instanceof Error ? requestError.message : "Could not record deposit";
+      setError(message); showToast(message, "error");
     } finally { setSaving(false); }
   }
 

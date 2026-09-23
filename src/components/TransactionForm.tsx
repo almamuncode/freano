@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Transaction } from "@/types";
+import { showToast } from "@/lib/toast";
 
 const PAYMENT_METHODS = ["CASH", "BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER", "CARD", "OTHER"];
 const SCOPES = ["PERSONAL", "FAMILY", "BUSINESS"];
@@ -83,9 +84,13 @@ export default function TransactionForm({
 
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        setError(typeof data?.error === "string" ? data.error : "Failed to save transaction");
+        const message = typeof data?.error === "string" ? data.error : "Failed to save transaction";
+        setError(message);
+        showToast(message, "error");
         return;
       }
+
+      showToast(transaction ? "Transaction updated" : "Transaction added");
 
       if (transaction || !addAnother) {
         router.push(returnTo ?? "/transactions");
@@ -98,6 +103,7 @@ export default function TransactionForm({
       }
     } catch {
       setError("Something went wrong. Please try again.");
+      showToast("Could not save transaction", "error");
     } finally {
       setLoading(false);
     }

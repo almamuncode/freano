@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { showToast } from "@/lib/toast";
 
 type Earning = { id: string; sourceType: string; platform: string; title: string; client?: string | null; grossAmount: number; platformFee: number; otherFee: number; currency: string; exchangeRate: number; netAmountBdt: number; status: "PENDING" | "AVAILABLE" | "RECEIVED"; expectedPayoutAt?: string | null; receivedAt?: string | null; note?: string | null };
 type AccountOption = { id: string; name: string };
@@ -23,20 +24,21 @@ export default function EarningsWorkspace({ initialEarnings, banks, wallets }: {
     event.preventDefault(); setSaving(true); setMessage("");
     const response = await fetch("/api/earnings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, grossAmount: Number(form.grossAmount), platformFee: Number(form.platformFee || 0), otherFee: Number(form.otherFee || 0), exchangeRate: Number(form.exchangeRate), expectedPayoutAt: form.expectedPayoutAt || undefined }) });
     const data = await response.json(); setSaving(false);
-    if (!response.ok) return setMessage(data.error ?? "Could not save earning");
-    setEarnings((current) => [{ ...data, grossAmount: Number(data.grossAmount), platformFee: Number(data.platformFee), otherFee: Number(data.otherFee), exchangeRate: Number(data.exchangeRate), netAmountBdt: Number(data.netAmountBdt) }, ...current]); setForm(initialForm); setMessage("Earning saved."); router.refresh();
+    if (!response.ok) { const message = data.error ?? "Could not save earning"; setMessage(message); showToast(message, "error"); return; }
+    setEarnings((current) => [{ ...data, grossAmount: Number(data.grossAmount), platformFee: Number(data.platformFee), otherFee: Number(data.otherFee), exchangeRate: Number(data.exchangeRate), netAmountBdt: Number(data.netAmountBdt) }, ...current]); setForm(initialForm); setMessage(""); showToast("Earning saved"); router.refresh();
   }
 
   async function receive(id: string) {
     const response = await fetch(`/api/earnings/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "RECEIVE", account, bankId: account === "BANK" ? bankId : undefined, walletId: account === "WALLET" ? walletId : undefined, paymentMethod }) });
-    const data = await response.json(); if (!response.ok) return setMessage(data.error ?? "Could not receive payout");
-    setEarnings((current) => current.map((item) => item.id === id ? { ...item, status: "RECEIVED", receivedAt: data.receivedAt } : item)); setReceivingId(null); setMessage("Payout added to your account balance."); router.refresh();
+    const data = await response.json(); if (!response.ok) { const message = data.error ?? "Could not receive payout"; setMessage(message); showToast(message, "error"); return; }
+    setEarnings((current) => current.map((item) => item.id === id ? { ...item, status: "RECEIVED", receivedAt: data.receivedAt } : item)); setReceivingId(null); setMessage(""); showToast("Payout added to balance"); router.refresh();
   }
 
   async function remove(id: string) {
     if (!confirm("Delete this earning record?")) return;
-    const response = await fetch(`/api/earnings/${id}`, { method: "DELETE" }); if (!response.ok) { const data = await response.json(); return setMessage(data.error ?? "Could not delete earning"); }
+    const response = await fetch(`/api/earnings/${id}`, { method: "DELETE" }); if (!response.ok) { const data = await response.json(); const message = data.error ?? "Could not delete earning"; setMessage(message); showToast(message, "error"); return; }
     setEarnings((current) => current.filter((item) => item.id !== id));
+    showToast("Earning deleted");
   }
 
   return <div className="grid min-w-0 gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">

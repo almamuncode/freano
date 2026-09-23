@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Transaction } from "@/types";
+import { showToast } from "@/lib/toast";
 
 function formatMoney(amount: number, currency: string) {
   return `${currency === "BDT" ? "৳" : `${currency} `}${new Intl.NumberFormat("en-BD", { maximumFractionDigits: 2 }).format(amount)}`;
@@ -33,9 +34,10 @@ export default function TransactionList({ transactions }: { transactions: Transa
         throw new Error(data?.error ?? "Failed to delete transaction");
       }
       setVisibleTransactions((current) => current.filter((transaction) => transaction.id !== id));
+      showToast("Transaction deleted");
       router.refresh();
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : "Failed to delete transaction");
+      showToast(error instanceof Error ? error.message : "Failed to delete transaction", "error");
     } finally {
       setDeletingId(null);
     }

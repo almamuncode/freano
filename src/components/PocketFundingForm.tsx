@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { showToast } from "@/lib/toast";
 
 type FundingSource = "BANK" | "CASH" | "PROJECT_FEE" | "GIFT" | "OTHER";
 
@@ -30,9 +31,10 @@ export default function PocketFundingForm({ banks }: { banks: { id: string; name
       const response = await fetch("/api/transfers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: Number(amount), sourceType, bankId: sourceType === "BANK" ? bankId : undefined, note: note || undefined, occurredAt: new Date().toISOString() }) });
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error(data?.error ?? "Could not add pocket money");
-      setAmount(""); setNote(""); router.refresh();
+      setAmount(""); setNote(""); showToast("Funds added"); router.refresh();
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Could not add pocket money");
+      const message = requestError instanceof Error ? requestError.message : "Could not add pocket money";
+      setError(message); showToast(message, "error");
     } finally { setSaving(false); }
   }
 

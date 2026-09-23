@@ -251,6 +251,53 @@ html.dark {
   .app-reveal {
     animation: app-reveal 320ms ease-out both;
   }
+
+  .toast-viewport {
+    position: fixed;
+    right: 0;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    left: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem;
+    pointer-events: none;
+  }
+
+  .mini-toast {
+    display: flex;
+    max-width: min(22rem, 100%);
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(17, 23, 20, 0.94);
+    padding: 0.55rem 0.8rem 0.55rem 0.6rem;
+    color: white;
+    box-shadow: 0 10px 30px rgba(17, 23, 20, 0.18);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+    backdrop-filter: blur(12px);
+    animation: mini-toast-life 2.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .mini-toast-icon {
+    display: grid;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 999px;
+    background: #73d94d;
+    color: #111714;
+    font-size: 0.7rem;
+    font-weight: 900;
+  }
+
+  .mini-toast-error .mini-toast-icon {
+    background: #f3aaa0;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -261,6 +308,7 @@ html.dark {
 @media (max-width: 1023px) {
   body:has(.mobile-app-nav) .app-main { padding-bottom: 6.5rem; }
   body:has(.mobile-app-nav) footer { padding-bottom: 4.5rem; }
+  body:has(.mobile-app-nav) .toast-viewport { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
 }
 
 @media (max-width: 420px) {
@@ -282,7 +330,14 @@ html.dark {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes mini-toast-life {
+  0% { opacity: 0; transform: translateY(8px) scale(0.98); }
+  12%, 82% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(4px) scale(0.99); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .app-reveal { animation: none; }
+  .mini-toast { animation: none; }
 }
