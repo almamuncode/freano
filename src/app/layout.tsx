@@ -5,7 +5,6 @@ import Providers from "@/components/Providers";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import InstallPrompt from "@/components/InstallPrompt";
 import Footer from "@/components/Footer";
-import AppLaunch from "@/components/AppLaunch";
 
 export const metadata: Metadata = {
   title: "Freano — Money Management for Freelancers",
@@ -36,7 +35,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-paper text-ink antialiased">
-        <AppLaunch />
         <Providers>
           <ServiceWorkerRegister />
           <InstallPrompt />
