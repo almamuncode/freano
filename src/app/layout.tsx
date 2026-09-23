@@ -5,6 +5,7 @@ import Providers from "@/components/Providers";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import InstallPrompt from "@/components/InstallPrompt";
 import Footer from "@/components/Footer";
+import AppLaunch from "@/components/AppLaunch";
 
 export const metadata: Metadata = {
   title: "Freano — Money Management for Freelancers",
@@ -19,10 +20,11 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
   icons: {
     icon: [
-      { url: "/icons/icon-dark-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-dark-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/icons/icon-launch.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-launch-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-launch-512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/icons/icon-dark-192.png",
+    apple: "/icons/icon-launch-192.png",
   },
 };
 
@@ -34,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="bg-paper text-ink antialiased">
+        <AppLaunch />
         <Providers>
           <ServiceWorkerRegister />
           <InstallPrompt />

@@ -10,13 +10,19 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/icon-dark-192.png",
+      "src": "/icons/icon-launch.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-launch-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-dark-512.png",
+      "src": "/icons/icon-launch-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
