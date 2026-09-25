@@ -19,12 +19,9 @@ export const metadata: Metadata = {
   applicationName: "Freano",
   formatDetection: { telephone: false },
   icons: {
-    icon: [
-      { url: "/icons/icon-launch.svg", type: "image/svg+xml" },
-      { url: "/icons/icon-launch-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-launch-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: "/icons/icon-launch-192.png",
+    icon: [{ url: "/icons/icon.png?v=2", sizes: "81x81", type: "image/png" }],
+    shortcut: "/icons/icon.png?v=2",
+    apple: "/icons/icon.png?v=2",
   },
 };
 
