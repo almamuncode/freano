@@ -133,7 +133,7 @@ export default function TransactionForm({
         </button>
       </div>
 
-      {!(!transaction && type === "INCOME" && account === "POCKET_MONEY") && <div>
+      <div>
         <label className="block text-sm font-medium mb-1">Amount (BDT)</label>
         <input
           type="number"
@@ -144,7 +144,7 @@ export default function TransactionForm({
           className="w-full border rounded-lg px-3 py-2"
           placeholder="0.00"
         />
-      </div>}
+      </div>
 
       <div>
         <label className="block text-sm font-medium mb-1">
