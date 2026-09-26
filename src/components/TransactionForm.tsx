@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Transaction } from "@/types";
 import { showToast } from "@/lib/toast";
-import { queueTransaction } from "@/lib/offline-transactions";
 
 const PAYMENT_METHODS = ["CASH", "BKASH", "NAGAD", "ROCKET", "BANK_TRANSFER", "CARD", "OTHER"];
 const SCOPES = ["PERSONAL", "FAMILY", "BUSINESS"];
@@ -21,7 +20,6 @@ function getLocalTime(occurredAt?: string) {
 }
 
 export default function TransactionForm({
-  userId,
   transaction,
   initialType,
   initialAccount,
@@ -31,7 +29,6 @@ export default function TransactionForm({
   banks,
   wallets,
 }: {
-  userId?: string;
   transaction?: Transaction;
   initialType?: "INCOME" | "EXPENSE";
   initialAccount?: "BANK" | "WALLET" | "POCKET_MONEY";
@@ -64,31 +61,25 @@ export default function TransactionForm({
 
     const occurredAt = new Date(`${date}T${time}:00`).toISOString();
 
-    const usePocketFunding = !transaction && type === "INCOME" && account === "POCKET_MONEY";
-    const clientRequestId = crypto.randomUUID();
-    const endpoint = usePocketFunding ? "/api/transfers" as const : "/api/transactions" as const;
-    const body = usePocketFunding ? {
-      amount: parseFloat(amount), sourceType: pocketSource, bankId: pocketSource === "BANK" ? bankId : undefined, note: note || undefined, occurredAt, clientRequestId,
-    } : {
-      type,
-      amount: parseFloat(amount),
-      source,
-      scope,
-      paymentMethod,
-      account,
-      bankId: account === "BANK" ? bankId : undefined,
-      walletId: account === "WALLET" ? walletId : undefined,
-      note: note || undefined,
-      occurredAt,
-      clientRequestId,
-    };
-
     try {
-      if (!transaction && !navigator.onLine) throw new TypeError("Offline");
-      const res = await fetch(transaction ? `/api/transactions/${transaction.id}` : endpoint, {
+      const usePocketFunding = !transaction && type === "INCOME" && account === "POCKET_MONEY";
+      const res = await fetch(usePocketFunding ? "/api/transfers" : transaction ? `/api/transactions/${transaction.id}` : "/api/transactions", {
         method: transaction ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify(usePocketFunding ? {
+          amount: parseFloat(amount), sourceType: pocketSource, bankId: pocketSource === "BANK" ? bankId : undefined, note: note || undefined, occurredAt,
+        } : {
+          type,
+          amount: parseFloat(amount),
+          source,
+          scope,
+          paymentMethod,
+          account,
+          bankId: account === "BANK" ? bankId : undefined,
+          walletId: account === "WALLET" ? walletId : undefined,
+          note: note || undefined,
+          occurredAt,
+        }),
       });
 
       if (!res.ok) {
@@ -110,18 +101,9 @@ export default function TransactionForm({
         setNote("");
         setError("Saved. Ready for the next transaction.");
       }
-    } catch (requestError) {
-      if (!transaction && userId && (requestError instanceof TypeError || !navigator.onLine)) {
-        await queueTransaction({ ownerId: userId, endpoint, body, label: source || (usePocketFunding ? "Pocket money" : "Transaction"), amount: Number(amount), type, occurredAt });
-        setAmount("");
-        setSource("");
-        setNote("");
-        setError("Saved offline. It will sync automatically when your connection returns.");
-        showToast("Transaction saved offline");
-      } else {
-        setError("Something went wrong. Please try again.");
-        showToast("Could not save transaction", "error");
-      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+      showToast("Could not save transaction", "error");
     } finally {
       setLoading(false);
     }

@@ -157,7 +157,6 @@ model Wallet {
 
 model Transaction {
   id            String           @id @default(cuid())
-  clientRequestId String?
   type          TransactionType
   amount        Decimal          @db.Decimal(12, 2)
   currency      String           @default("BDT")
@@ -194,7 +193,6 @@ model Transaction {
   @@index([bankId])
   @@index([walletId])
   @@index([userId, transferId])
-  @@unique([userId, clientRequestId])
 }
 
 model FreelanceEarning {

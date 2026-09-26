@@ -19,7 +19,6 @@ const createSchema = z.object({
   note: z.string().optional(),
   occurredAt: z.string(), // ISO date-time string from the form (date + time combined)
   categoryId: z.string().optional(),
-  clientRequestId: z.string().uuid().optional(),
 });
 
 // GET /api/transactions?type=EXPENSE&scope=FAMILY&from=2026-01-01&to=2026-01-31
@@ -68,14 +67,6 @@ export async function POST(req: Request) {
   }
 
   const data = parsed.data;
-  const userId = (session.user as any).id;
-
-  if (data.clientRequestId) {
-    const existing = await prisma.transaction.findUnique({
-      where: { userId_clientRequestId: { userId, clientRequestId: data.clientRequestId } },
-    });
-    if (existing) return NextResponse.json(existing);
-  }
 
   if (data.account === "BANK" && !data.bankId) {
     return NextResponse.json({ error: "Select the bank account for this transaction" }, { status: 400 });
@@ -85,11 +76,11 @@ export async function POST(req: Request) {
   }
 
   if (data.bankId) {
-    const bank = await prisma.bank.findFirst({ where: { id: data.bankId, userId } });
+    const bank = await prisma.bank.findFirst({ where: { id: data.bankId, userId: (session.user as any).id } });
     if (!bank) return NextResponse.json({ error: "Bank account not found" }, { status: 400 });
   }
   if (data.walletId) {
-    const wallet = await prisma.wallet.findFirst({ where: { id: data.walletId, userId } });
+    const wallet = await prisma.wallet.findFirst({ where: { id: data.walletId, userId: (session.user as any).id } });
     if (!wallet) return NextResponse.json({ error: "Wallet not found" }, { status: 400 });
   }
 
@@ -99,7 +90,7 @@ export async function POST(req: Request) {
       bankId: data.account === "BANK" ? data.bankId : undefined,
       walletId: data.account === "WALLET" ? data.walletId : undefined,
       occurredAt: new Date(data.occurredAt),
-      userId,
+      userId: (session.user as any).id,
     },
   });
 

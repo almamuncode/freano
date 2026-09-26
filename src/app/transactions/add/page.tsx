@@ -22,7 +22,7 @@ export default async function AddTransactionPage({
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Add Transaction</h1>
-      <TransactionForm userId={(session.user as any).id} initialType={initialType} initialAccount={initialAccount} initialBankId={initialAccount === "BANK" ? searchParams.bankId : undefined} initialWalletId={initialAccount === "WALLET" ? searchParams.walletId : undefined} returnTo={returnTo} banks={banks} wallets={wallets} />
+      <TransactionForm initialType={initialType} initialAccount={initialAccount} initialBankId={initialAccount === "BANK" ? searchParams.bankId : undefined} initialWalletId={initialAccount === "WALLET" ? searchParams.walletId : undefined} returnTo={returnTo} banks={banks} wallets={wallets} />
     </div>
   );
 }
