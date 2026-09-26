@@ -10,6 +10,7 @@ const transferSchema = z.object({
   bankId: z.string().cuid().optional(),
   occurredAt: z.string().datetime(),
   note: z.string().trim().max(500).optional(),
+  clientRequestId: z.string().uuid().optional(),
 });
 
 const sourceLabels = {
@@ -28,6 +29,12 @@ export async function POST(req: Request) {
 
   const userId = (session.user as any).id;
   const data = parsed.data;
+  if (data.clientRequestId) {
+    const existing = await prisma.transaction.findUnique({
+      where: { userId_clientRequestId: { userId, clientRequestId: data.clientRequestId } },
+    });
+    if (existing) return NextResponse.json(existing);
+  }
   if (data.sourceType !== "BANK") {
     const transaction = await prisma.transaction.create({
       data: {
@@ -39,6 +46,7 @@ export async function POST(req: Request) {
         account: "POCKET_MONEY",
         paymentMethod: data.sourceType === "CASH" ? "CASH" : "OTHER",
         userId,
+        clientRequestId: data.clientRequestId,
       },
     });
     return NextResponse.json(transaction, { status: 201 });
@@ -65,6 +73,7 @@ export async function POST(req: Request) {
         paymentMethod: "BANK_TRANSFER",
         transferId,
         userId,
+        clientRequestId: data.clientRequestId,
       },
     }),
     prisma.transaction.create({

@@ -6,6 +6,7 @@ import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import InstallPrompt from "@/components/InstallPrompt";
 import Footer from "@/components/Footer";
 import ToastViewport from "@/components/ToastViewport";
+import OfflineTransactionSync from "@/components/OfflineTransactionSync";
 
 export const metadata: Metadata = {
   title: "Freano — Money Management for Freelancers",
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-paper text-ink antialiased">
         <Providers>
           <ToastViewport />
+          <OfflineTransactionSync />
           <ServiceWorkerRegister />
           <InstallPrompt />
           <Navbar />
