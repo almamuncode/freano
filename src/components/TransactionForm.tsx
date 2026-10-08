@@ -1,8 +1,9 @@
 "use client";
 
+import { useWorkspace } from "@/components/WorkspaceContext";
+
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { WorkspaceLink as Link } from "@/components/WorkspaceContext";
 import { Transaction } from "@/types";
 import { showToast } from "@/lib/toast";
 
@@ -38,7 +39,7 @@ export default function TransactionForm({
   banks: { id: string; name: string }[];
   wallets: { id: string; name: string }[];
 }) {
-  const router = useRouter();
+  const router = useWorkspace();
   const [type, setType] = useState<"INCOME" | "EXPENSE">(transaction?.type ?? initialType ?? "EXPENSE");
   const [amount, setAmount] = useState(transaction ? String(transaction.amount) : "");
   const [source, setSource] = useState(transaction?.source ?? "");
@@ -63,7 +64,7 @@ export default function TransactionForm({
 
     try {
       const usePocketFunding = !transaction && type === "INCOME" && account === "POCKET_MONEY";
-      const res = await fetch(usePocketFunding ? "/api/transfers" : transaction ? `/api/transactions/${transaction.id}` : "/api/transactions", {
+      const res = await router.request(usePocketFunding ? "/api/transfers" : transaction ? `/api/transactions/${transaction.id}` : "/api/transactions", {
         method: transaction ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(usePocketFunding ? {

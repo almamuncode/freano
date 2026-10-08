@@ -1,5 +1,7 @@
 "use client";
 
+import { useWorkspace } from "@/components/WorkspaceContext";
+
 import { useState } from "react";
 
 type Payment = { id: string; amount: number; paidAt: string; note?: string | null };
@@ -18,6 +20,7 @@ function formFromLoan(loan: Loan): LoanForm {
 }
 
 export default function LoanTracker({ initialLoans }: { initialLoans: Loan[] }) {
+  const router = useWorkspace();
   const [loans, setLoans] = useState(initialLoans);
   const [form, setForm] = useState<LoanForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -31,7 +34,7 @@ export default function LoanTracker({ initialLoans }: { initialLoans: Loan[] }) 
   async function saveLoan(event: React.FormEvent) {
     event.preventDefault();
     const editing = Boolean(editingId);
-    const response = await fetch(editing ? `/api/loans/${editingId}` : "/api/loans", { method: editing ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, principal: Number(form.principal), interestRate: Number(form.interestRate || 0) }) });
+    const response = await router.request(editing ? `/api/loans/${editingId}` : "/api/loans", { method: editing ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, principal: Number(form.principal), interestRate: Number(form.interestRate || 0) }) });
     const data = await response.json();
     if (!response.ok) return setMessage(data.error ?? "Could not save loan");
     const saved = { ...data, principal: Number(data.principal), interestRate: Number(data.interestRate), payments: editing ? loans.find((loan) => loan.id === editingId)?.payments ?? [] : [] };
@@ -40,7 +43,7 @@ export default function LoanTracker({ initialLoans }: { initialLoans: Loan[] }) 
   }
 
   async function addPayment(loan: Loan) {
-    const response = await fetch(`/api/loans/${loan.id}/payments`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: Number(paymentAmount) }) });
+    const response = await router.request(`/api/loans/${loan.id}/payments`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: Number(paymentAmount) }) });
     const data = await response.json();
     if (!response.ok) return setMessage(data.error ?? "Could not save repayment");
     setLoans((current) => current.map((item) => item.id === loan.id ? { ...item, status: data.status ?? "OPEN", payments: [...item.payments, { ...data, amount: Number(data.amount) }] } : item));
@@ -49,7 +52,7 @@ export default function LoanTracker({ initialLoans }: { initialLoans: Loan[] }) 
 
   async function deleteLoan(loan: Loan) {
     if (!window.confirm(`Delete the loan with ${loan.person}? Its repayment history will also be removed.`)) return;
-    const response = await fetch(`/api/loans/${loan.id}`, { method: "DELETE" });
+    const response = await router.request(`/api/loans/${loan.id}`, { method: "DELETE" });
     if (!response.ok) return setMessage("Could not delete loan");
     setLoans((current) => current.filter((item) => item.id !== loan.id)); setMessage("Loan deleted.");
   }

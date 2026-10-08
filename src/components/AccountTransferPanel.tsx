@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useWorkspace } from "@/components/WorkspaceContext";
+
 import { useState } from "react";
 import { showToast } from "@/lib/toast";
 
@@ -11,7 +12,7 @@ type Counterparty = Account | "PERSON";
 const labels: Record<Account, string> = { BANK: "Bank account", WALLET: "Wallet", POCKET_MONEY: "Pocket money" };
 
 export default function AccountTransferPanel({ currentAccount, currentId, banks, wallets }: { currentAccount: Account; currentId?: string; banks: NamedAccount[]; wallets: NamedAccount[] }) {
-  const router = useRouter();
+  const router = useWorkspace();
   const [mode, setMode] = useState<"DEPOSIT" | "WITHDRAW">("DEPOSIT");
   const [counterparty, setCounterparty] = useState<Counterparty>(currentAccount === "BANK" ? "POCKET_MONEY" : "BANK");
   const [counterpartyId, setCounterpartyId] = useState("");
@@ -32,7 +33,7 @@ export default function AccountTransferPanel({ currentAccount, currentId, banks,
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setSaving(true); setError("");
     try {
-      const response = await fetch("/api/account-transfers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: Number(amount), fromAccount: sourceAccount, toAccount: destinationAccount, fromId: sourceId, toId: destinationId, personName: counterparty === "PERSON" ? personName : undefined, note: note || undefined, occurredAt: new Date().toISOString() }) });
+      const response = await router.request("/api/account-transfers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: Number(amount), fromAccount: sourceAccount, toAccount: destinationAccount, fromId: sourceId, toId: destinationId, personName: counterparty === "PERSON" ? personName : undefined, note: note || undefined, occurredAt: new Date().toISOString() }) });
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error(data?.error ?? `Could not record ${isDeposit ? "deposit" : "withdrawal"}`);
       setAmount(""); setNote(""); setPersonName(""); showToast(isDeposit ? "Deposit added" : "Withdrawal recorded"); router.refresh();

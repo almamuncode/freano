@@ -1,17 +1,18 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useWorkspace } from "@/components/WorkspaceContext";
+
 import { useState } from "react";
 
 export default function AccountRemovalButton({ account, id, returnTo }: { account: "bank" | "wallet"; id: string; returnTo: string }) {
-  const router = useRouter();
+  const router = useWorkspace();
   const [error, setError] = useState("");
   const [removing, setRemoving] = useState(false);
   async function remove() {
     if (!window.confirm(`Remove this ${account} and all of its activity? Its balance will be removed from your total.`)) return;
     setRemoving(true); setError("");
     try {
-      const response = await fetch(`/api/${account}s/${id}`, { method: "DELETE" });
+      const response = await router.request(`/api/${account}s/${id}`, { method: "DELETE" });
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error(data?.error ?? `Could not remove ${account}`);
       router.push(returnTo); router.refresh();

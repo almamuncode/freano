@@ -36,7 +36,7 @@ export default function Navbar() {
   useEffect(() => { if (status !== "authenticated") return; const load = () => fetch("/api/profile", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).then((d) => setProfileImage(d?.image ?? null)).catch(() => undefined); load(); window.addEventListener("profile-updated", load); return () => window.removeEventListener("profile-updated", load); }, [status]);
   useEffect(() => { const close = (e: MouseEvent) => { if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false); }; document.addEventListener("mousedown", close); return () => document.removeEventListener("mousedown", close); }, []);
 
-  if (status === "authenticated") return <>
+  if (status === "authenticated" && pathname !== "/guest") return <>
     <aside className="app-sidebar fixed inset-y-0 left-0 z-50 hidden w-[250px] flex-col border-r border-white/10 bg-[#111714] px-4 py-5 text-white lg:flex">
       <Link href="/dashboard" className="mb-7 px-2"><img src="/icons/logo-dark.png" alt="Freano" className="w-32" /></Link>
       <nav className="space-y-1">{mainLinks.map((link) => <Link key={link.href} href={link.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${active(link.href) ? "bg-gradient-to-r from-[#448d3b] to-[#5cae42] text-white shadow-lg shadow-black/20" : "text-white/65 hover:bg-white/[0.06] hover:text-white"}`}><Icon name={link.icon}/>{link.label}</Link>)}</nav>

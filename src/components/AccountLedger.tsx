@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/WorkspaceContext";
 import TransactionList from "@/components/TransactionList";
 import { Account, Transaction } from "@/types";
 

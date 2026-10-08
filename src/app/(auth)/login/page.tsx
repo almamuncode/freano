@@ -68,6 +68,10 @@ export default function LoginPage() {
       <p className="text-center text-sm text-gray-500 mt-4">
         No account? <Link href="/register" className="text-brand">Register</Link>
       </p>
+      <div className="mt-5 border-t border-hairline pt-5 text-center">
+        <Link href="/guest" className="block rounded-xl border border-brand/30 px-4 py-2.5 font-semibold text-brand">Continue as guest</Link>
+        <p className="mt-2 text-xs text-ink/55">Try the features without an account. Guest data clears when you leave or refresh.</p>
+      </div>
     </div>
   );
 }

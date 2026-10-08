@@ -26,6 +26,7 @@ export default function Home() {
               >
                 Start your ledger <span aria-hidden="true">-&gt;</span>
               </Link>
+              <Link href="/guest" className="rounded-xl border border-brand/30 px-5 py-3 font-semibold text-brand">Try as guest</Link>
               <Link href="/login" className="font-semibold text-ink/70 hover:text-brand">
                 I already have an account
               </Link>

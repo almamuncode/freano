@@ -1,10 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useWorkspace } from "@/components/WorkspaceContext";
+
 import { useState } from "react";
 
 export default function BankForm() {
-  const router = useRouter();
+  const router = useWorkspace();
   const [name, setName] = useState("");
   const [details, setDetails] = useState("");
   const [error, setError] = useState("");
@@ -14,7 +15,7 @@ export default function BankForm() {
     event.preventDefault();
     setSaving(true); setError("");
     try {
-      const response = await fetch("/api/banks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, details }) });
+      const response = await router.request("/api/banks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, details }) });
       const bank = await response.json();
       if (!response.ok) throw new Error(bank.error ?? "Could not add bank account");
       router.push(`/bank/${bank.id}`); router.refresh();

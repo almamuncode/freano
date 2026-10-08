@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useWorkspace } from "@/components/WorkspaceContext";
+
+import { WorkspaceLink as Link } from "@/components/WorkspaceContext";
 import { useEffect, useState } from "react";
 import { Transaction } from "@/types";
 import { showToast } from "@/lib/toast";
@@ -11,7 +12,7 @@ function formatMoney(amount: number, currency: string) {
 }
 
 export default function TransactionList({ transactions }: { transactions: Transaction[] }) {
-  const router = useRouter();
+  const router = useWorkspace();
   const [visibleTransactions, setVisibleTransactions] = useState(transactions);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -28,7 +29,7 @@ export default function TransactionList({ transactions }: { transactions: Transa
 
     setDeletingId(id);
     try {
-      const response = await fetch(`/api/transactions/${id}`, { method: "DELETE" });
+      const response = await router.request(`/api/transactions/${id}`, { method: "DELETE" });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
         throw new Error(data?.error ?? "Failed to delete transaction");

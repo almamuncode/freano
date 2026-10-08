@@ -130,3 +130,11 @@ freano/
 - NextAuth.js (credentials provider)
 - Recharts (for future charts)
 - Zod (input validation)
+
+## Guest mode
+
+Visitors can select **Try as guest** on the landing page or **Continue as guest** on login and registration pages. `/guest` reuses the financial forms and trackers with an isolated, in-memory data adapter. Guests can manage bank accounts and wallets, income and expenses, transfers, bill records, freelance earnings and payouts, loans and repayments, projects and payments, and filtered CSV statements.
+
+Guest financial data never reaches the authenticated APIs or database and is never written to browser storage. It remains available while navigating inside the guest workspace, and clears on refresh, closing the tab/app, leaving the workspace, or selecting **Reset demo**. Browser history restoration starts empty. Creating an account does not import guest records. CSV exports are explicitly downloaded files and remain on the visitor's device.
+
+Run `npm run test:guest` to verify isolation, balance accounting, transfer rollback, payout receipts, repayment limits, and network isolation.

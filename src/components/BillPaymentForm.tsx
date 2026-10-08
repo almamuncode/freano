@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useWorkspace } from "@/components/WorkspaceContext";
+
 import { useState } from "react";
 import { showToast } from "@/lib/toast";
 
@@ -10,7 +11,7 @@ type NamedAccount = { id: string; name: string };
 const billers = ["Electricity - DESCO", "Electricity - DPDC", "Electricity - NESCO", "Electricity - Palli Bidyut", "Electricity - WZPDCL", "Gas - Titas", "Gas - Karnaphuli", "Water - WASA", "Internet broadband", "Mobile recharge", "Cable TV", "Education fee", "Insurance premium", "Government fee", "Other bill"];
 
 export default function BillPaymentForm({ banks, wallets, initialAccount, initialBankId, initialWalletId, returnTo }: { banks: NamedAccount[]; wallets: NamedAccount[]; initialAccount?: Account; initialBankId?: string; initialWalletId?: string; returnTo?: string }) {
-  const router = useRouter();
+  const router = useWorkspace();
   const [biller, setBiller] = useState(billers[0]);
   const [reference, setReference] = useState("");
   const [amount, setAmount] = useState("");
@@ -24,7 +25,7 @@ export default function BillPaymentForm({ banks, wallets, initialAccount, initia
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setSaving(true); setError("");
     try {
-      const response = await fetch("/api/bills", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ biller, reference, amount: Number(amount), account, bankId: account === "BANK" ? bankId : undefined, walletId: account === "WALLET" ? walletId : undefined, note: note || undefined, occurredAt: new Date().toISOString() }) });
+      const response = await router.request("/api/bills", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ biller, reference, amount: Number(amount), account, bankId: account === "BANK" ? bankId : undefined, walletId: account === "WALLET" ? walletId : undefined, note: note || undefined, occurredAt: new Date().toISOString() }) });
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error(data?.error ?? "Could not pay this bill");
       showToast("Bill payment recorded"); router.push(returnTo ?? "/transactions"); router.refresh();
