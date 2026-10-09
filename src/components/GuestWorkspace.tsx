@@ -19,11 +19,6 @@ import StatementExport from "./StatementExport";
 import DashboardChart from "./DashboardChart";
 import BudgetHealthCard from "./BudgetHealthCard";
 
-const sections = [
-  ["/dashboard", "Dashboard"], ["/earnings", "Earnings"], ["/projects", "Projects"],
-  ["/transactions", "Transactions"], ["/bank", "Banks"], ["/wallet", "Wallets"],
-  ["/pocket-money", "Pocket money"], ["/loans", "Loans"], ["/statement", "Statement"],
-] as const;
 const money = (value: number) => `৳${value.toLocaleString("en-BD", { maximumFractionDigits: 2 })}`;
 
 export default function GuestWorkspace() {
@@ -52,7 +47,7 @@ export default function GuestWorkspace() {
         <div><p className="page-kicker">Guest mode</p><h1 className="mt-1 text-xl font-bold">Try Freano without an account</h1><p className="mt-2 text-sm text-ink/60">Your data stays in this tab only. Closing, refreshing, or leaving this workspace clears it.</p></div>
         <div className="flex shrink-0 flex-wrap gap-3"><Link href="/register" className="btn-primary">Create account</Link><button className="rounded-xl border px-4 py-2 text-sm font-semibold" onClick={() => { if (window.confirm("Clear all guest data and start again?")) { store.reset(); setData(store.snapshot()); setGeneration(n => n + 1); workspace.push("/dashboard"); } }}>Reset demo</button></div>
       </section>
-      <nav aria-label="Guest workspace" className="flex flex-wrap gap-2">{sections.map(([href, label]) => <WorkspaceLink key={href} href={href} className={`rounded-xl px-3 py-2 text-sm font-semibold ${url.pathname === href || url.pathname.startsWith(`${href}/`) ? "bg-brand text-white" : "border border-hairline bg-white text-ink"}`}>{label}</WorkspaceLink>)}</nav>
+
       <GuestView key={`${generation}:${path}`} data={data} url={url} />
     </div>
   </WorkspaceContext.Provider>;
