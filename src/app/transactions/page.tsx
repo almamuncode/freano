@@ -26,7 +26,7 @@ export default async function TransactionsPage() {
         <div className="grid grid-cols-2 gap-2 sm:flex">
           <Link href="/transactions/add?type=INCOME" className="rounded-xl bg-income px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5">+ Income</Link>
           <Link href="/transactions/add?type=EXPENSE" className="rounded-xl bg-expense px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5">− Expense</Link>
-          <Link href="/bills/pay" className="col-span-2 rounded-xl border border-[#e8d7aa] bg-[#fffcf5] px-4 py-2.5 text-center text-sm font-semibold text-brass shadow-sm transition hover:-translate-y-0.5 sm:col-auto">Pay bill</Link>
+          <Link href="/bills/pay" className="col-span-2 rounded-xl border border-[#e8d7aa] bg-[#fffaf5] px-4 py-2.5 text-center text-sm font-semibold text-brass shadow-sm transition hover:-translate-y-0.5 sm:col-auto">Pay bill</Link>
         </div>
       </div>
       <TransactionList

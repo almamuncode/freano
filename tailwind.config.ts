@@ -9,22 +9,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        income: "#2f8f3a",
-        expense: "#d92d20",
+        income: "#5428df",
+        expense: "#c64d16",
         brand: {
-          DEFAULT: "#318c3b",
-          light: "#73d94d",
-          dark: "#236b2d",
+          DEFAULT: "#5428df",
+          light: "#ff8038",
+          dark: "#4320bb",
         },
-        paper: "#f4f6f3",
-        ink: "#171c18",
+        paper: "#f5f3fc",
+        ink: "#211b39",
         brass: {
-          DEFAULT: "#758078",
-          light: "#929c94",
+          DEFAULT: "#817493",
+          light: "#a59bb6",
         },
-        sage: "#166534",
-        rust: "#b42318",
-        hairline: "#e3e8e2",
+        sage: "#5428df",
+        rust: "#c64d16",
+        hairline: "#e9e4f5",
       },
       fontFamily: {
         ledger: ["var(--font-ledger)", "Georgia", "serif"],

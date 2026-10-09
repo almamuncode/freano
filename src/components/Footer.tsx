@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Brand from "./Brand";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -17,10 +18,7 @@ export default async function Footer() {
     <footer className="border-t border-hairline bg-white text-ink dark:bg-[#1d1d1f] dark:text-white">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4 py-5 text-center sm:justify-between sm:px-6 sm:text-left">
         <div className="order-1">
-          <Link href={homeHref} className="inline-block" aria-label="Freano home">
-            <img src="/icons/logo.png" alt="Freano" className="w-28 dark:hidden" />
-            <img src="/icons/logo-dark.png" alt="Freano" className="hidden w-28 dark:block" />
-          </Link>
+          <Brand href={homeHref} />
         </div>
 
         <nav className="order-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-ink/60 dark:text-white/70 sm:order-2">

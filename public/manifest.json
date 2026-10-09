@@ -1,29 +1,17 @@
 {
-  "name": "Freano — Money Management for Freelancers",
+  "name": "Freano \u2014 Money Management for Freelancers",
   "short_name": "Freano",
   "description": "Track freelance earnings, payouts, expenses, and accounts in one place.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#f4f6f3",
-  "theme_color": "#111714",
+  "background_color": "#f5f3fc",
+  "theme_color": "#5428df",
   "id": "/",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/icon-launch.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-launch-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-launch-512.png",
-      "sizes": "512x512",
+      "src": "/icons/freano-app.png",
+      "sizes": "263x263",
       "type": "image/png",
       "purpose": "any"
     }

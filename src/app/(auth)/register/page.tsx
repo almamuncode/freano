@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AuthShell from "@/components/AuthShell";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -35,9 +36,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4">
+    <AuthShell register>
+      <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="mb-1 block text-sm text-gray-600">Full name</label>
           <input
@@ -122,18 +122,14 @@ export default function RegisterPage() {
             className="w-full border rounded-lg px-3 py-2"
           />
         </div>
-        {error && <p className="text-expense text-sm">{error}</p>}
-        <button className="w-full bg-brand text-white py-2 rounded-lg font-medium">
-          Register
+        {error && <p role="alert" className="text-expense text-sm sm:col-span-2">{error}</p>}
+        <button className="btn-primary w-full sm:col-span-2">
+          Create account →
         </button>
       </form>
       <p className="text-center text-sm text-gray-500 mt-4">
         Already have an account? <Link href="/login" className="text-brand">Log in</Link>
       </p>
-      <div className="mt-5 border-t border-hairline pt-5 text-center">
-        <Link href="/guest" className="block rounded-xl border border-brand/30 px-4 py-2.5 font-semibold text-brand">Continue as guest</Link>
-        <p className="mt-2 text-xs text-ink/55">Try the features without an account. Guest data clears when you leave or refresh.</p>
-      </div>
-    </div>
+    </AuthShell>
   );
 }

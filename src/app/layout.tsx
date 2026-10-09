@@ -19,14 +19,14 @@ export const metadata: Metadata = {
   applicationName: "Freano",
   formatDetection: { telephone: false },
   icons: {
-    icon: [{ url: "/icons/icon.png?v=2", sizes: "81x81", type: "image/png" }],
-    shortcut: "/icons/icon.png?v=2",
-    apple: "/icons/icon.png?v=2",
+    icon: [{ url: "/icons/freano-app.png?v=3", sizes: "263x263", type: "image/png" }],
+    shortcut: "/icons/freano-app.png?v=3",
+    apple: "/icons/freano-app.png?v=3",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#111714",
+  themeColor: "#5428df",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

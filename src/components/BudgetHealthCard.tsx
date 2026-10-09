@@ -26,7 +26,7 @@ export default function BudgetHealthCard({ income, expenses, dayOfMonth, daysInM
           <h2 className="mt-2 text-lg font-bold text-ink">Know what is safe to spend</h2>
           <p className="mt-1 text-sm text-ink/60">Based on income received this month.</p>
         </div>
-        <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${!hasIncome ? "bg-gray-100 text-ink/55" : isAheadOfPace ? "bg-[#fff0ed] text-rust" : "bg-[#edf8e9] text-sage"}`}>
+        <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${!hasIncome ? "bg-gray-100 text-ink/55" : isAheadOfPace ? "bg-[#fff0e6] text-rust" : "bg-[#eee8ff] text-sage"}`}>
           {!hasIncome ? "Add income" : isAheadOfPace ? "Watch spending" : "On track"}
         </span>
       </div>
@@ -35,14 +35,14 @@ export default function BudgetHealthCard({ income, expenses, dayOfMonth, daysInM
         <div><p className="text-xs text-ink/55">Remaining this month</p><p className="mt-1 text-3xl font-bold tracking-tight text-ink">{formatMoney(remaining)}</p></div>
         <p className="text-right text-xs text-ink/50">{Math.round(usedPercentage)}% used</p>
       </div>
-      <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-[#e9eee8] dark:bg-white/10">
-        <div className={`h-full rounded-full transition-all ${isAheadOfPace ? "bg-expense" : "bg-gradient-to-r from-[#4e9c3f] to-[#83dc5d]"}`} style={{ width: `${usedPercentage}%` }} />
+      <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-[#ece6f8] dark:bg-white/10">
+        <div className={`h-full rounded-full transition-all ${isAheadOfPace ? "bg-expense" : "bg-gradient-to-r from-[#5428df] to-[#a58aff]"}`} style={{ width: `${usedPercentage}%` }} />
       </div>
       <div className="mt-2 flex justify-between text-[11px] text-ink/45"><span>Spent {formatMoney(expenses)}</span><span>Income {formatMoney(income)}</span></div>
 
       <div className="mt-5 grid grid-cols-2 gap-3 border-t border-hairline pt-5">
-        <div className="rounded-xl bg-[#f4f8f2] p-3 dark:bg-white/5"><p className="text-xs text-ink/50">Safe per day</p><p className="mt-1 text-lg font-bold text-brand">{formatMoney(safePerDay)}</p></div>
-        <div className="rounded-xl bg-[#f4f8f2] p-3 dark:bg-white/5"><p className="text-xs text-ink/50">Days remaining</p><p className="mt-1 text-lg font-bold text-ink">{daysRemaining}</p></div>
+        <div className="rounded-xl bg-[#f8f6ff] p-3 dark:bg-white/5"><p className="text-xs text-ink/50">Safe per day</p><p className="mt-1 text-lg font-bold text-brand">{formatMoney(safePerDay)}</p></div>
+        <div className="rounded-xl bg-[#f8f6ff] p-3 dark:bg-white/5"><p className="text-xs text-ink/50">Days remaining</p><p className="mt-1 text-lg font-bold text-ink">{daysRemaining}</p></div>
       </div>
     </section>
   );

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AuthShell from "@/components/AuthShell";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,9 +31,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto mt-8 max-w-sm sm:mt-12">
-      <div className="mb-7 text-center"><p className="page-kicker">Welcome back</p><h1 className="mt-2 text-3xl font-bold tracking-tight">Log in to Freano</h1><p className="mt-2 text-sm text-ink/60">Your financial workspace is waiting.</p></div>
-      <form onSubmit={handleSubmit} className="form-card">
+    <AuthShell>
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label htmlFor="email" className="mb-1 block text-sm text-gray-600">Email</label>
           <input
@@ -60,7 +60,7 @@ export default function LoginPage() {
             className="w-full"
           />
         </div>
-        {error && <p className="text-expense text-sm">{error}</p>}
+        {error && <p role="alert" className="text-expense text-sm">{error}</p>}
         <button className="btn-primary w-full">
           Log In
         </button>
@@ -68,10 +68,6 @@ export default function LoginPage() {
       <p className="text-center text-sm text-gray-500 mt-4">
         No account? <Link href="/register" className="text-brand">Register</Link>
       </p>
-      <div className="mt-5 border-t border-hairline pt-5 text-center">
-        <Link href="/guest" className="block rounded-xl border border-brand/30 px-4 py-2.5 font-semibold text-brand">Continue as guest</Link>
-        <p className="mt-2 text-xs text-ink/55">Try the features without an account. Guest data clears when you leave or refresh.</p>
-      </div>
-    </div>
+    </AuthShell>
   );
 }

@@ -13,7 +13,7 @@ export default function Home() {
               Built for independent work
             </div>
             <h1 className="max-w-2xl text-5xl font-bold leading-[0.98] tracking-tight text-ink sm:text-7xl">
-              Your work is personal. Your money should be clear.
+              Your money.<br />Your freedom.<br /><span className="text-brand">Your next chapter.</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-7 text-ink/65 sm:text-lg">
               Freano brings income, family costs, and business expenses into one
@@ -24,7 +24,7 @@ export default function Home() {
                 href="/register"
               className="btn-primary px-6 py-3.5"
               >
-                Start your ledger <span aria-hidden="true">-&gt;</span>
+                Find your flow <span aria-hidden="true">-&gt;</span>
               </Link>
               <Link href="/guest" className="rounded-xl border border-brand/30 px-5 py-3 font-semibold text-brand">Try as guest</Link>
               <Link href="/login" className="font-semibold text-ink/70 hover:text-brand">
@@ -42,26 +42,16 @@ export default function Home() {
           </div>
 
           <div className="landing-card relative mx-auto w-full max-w-md rotate-1 rounded-3xl border border-white/80 p-5 shadow-[0_26px_70px_rgba(32,41,58,0.16)] sm:p-7">
-            <div className="flex items-start justify-between border-b border-hairline pb-5">
-              <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brass">One clear view</p>
-                <h2 className="mt-2 text-2xl font-bold text-ink">Your money, organized.</h2>
-              </div>
-              <span className="text-2xl text-brand" aria-hidden="true">+</span>
+            <div className="relative overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#4320bb,#7348ef)] p-6 text-white">
+              <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full border-[32px] border-white/10" />
+              <div className="relative flex items-center justify-between"><span className="text-sm text-white/75">Your total balance</span><img src="/icons/Icon3.png" alt="" className="h-10 w-10 rounded-xl" /></div>
+              <p className="relative mt-7 text-4xl font-bold tracking-tight">৳25,400<span className="text-xl font-medium text-white/60">.00</span></p>
+              <div className="relative mt-6 flex gap-3 text-xs"><span className="rounded-full bg-white/15 px-3 py-2">↗ Income <b className="ml-1">৳32,500</b></span><span className="rounded-full bg-[#ff8038] px-3 py-2">↘ Expenses <b className="ml-1">৳7,100</b></span></div>
+              <svg viewBox="0 0 320 90" className="relative mt-5 w-full" aria-hidden="true"><defs><linearGradient id="preview-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="white" stopOpacity=".25"/><stop offset="100%" stopColor="white" stopOpacity="0"/></linearGradient></defs><path d="M0 70 C30 75 35 20 65 30 S110 80 145 40 S195 60 225 25 S275 40 320 5 V90 H0Z" fill="url(#preview-fill)"/><path d="M0 70 C30 75 35 20 65 30 S110 80 145 40 S195 60 225 25 S275 40 320 5" fill="none" stroke="white" strokeWidth="3"/><path d="M0 80 C40 40 60 65 90 55 S160 80 200 65 S270 80 320 50" fill="none" stroke="#ffb588" strokeWidth="2.5"/></svg>
             </div>
-            <div className="space-y-3 py-6">
-              <div className="landing-row flex items-center gap-4 rounded-lg p-4">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#dfeee0] text-sage">+</span>
-                <div><p className="text-sm font-semibold text-ink">Income</p><p className="text-xs text-ink/50">Client work and retainers</p></div>
-              </div>
-              <div className="landing-row flex items-center gap-4 rounded-lg p-4">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f3ded8] text-rust">-</span>
-                <div><p className="text-sm font-semibold text-ink">Expenses</p><p className="text-xs text-ink/50">Business and everyday costs</p></div>
-              </div>
-              <div className="landing-row flex items-center gap-4 rounded-lg p-4">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#eee4ce] text-brass">*</span>
-                <div><p className="text-sm font-semibold text-ink">Life categories</p><p className="text-xs text-ink/50">Personal, family, and more</p></div>
-              </div>
+            <div className="mb-3 mt-6 flex justify-between"><h2 className="text-base font-bold">A little more organized.</h2><span className="text-xs text-ink/45">Preview</span></div>
+            <div className="space-y-3">
+              {[{ label: "Client income", detail: "Every project, every payout", icon: "↗", color: "bg-[#eee8ff] text-brand" }, { label: "Everyday spending", detail: "Know where your money goes", icon: "↘", color: "bg-[#ffede3] text-rust" }, { label: "Your next big goal", detail: "Make space for what matters", icon: "✧", color: "bg-[#e7f6f9] text-[#287f94]" }].map((item) => <div key={item.label} className="landing-row flex items-center gap-3 rounded-2xl p-3"><span className={`flex h-10 w-10 items-center justify-center rounded-xl text-xl ${item.color}`}>{item.icon}</span><div><p className="text-sm font-semibold">{item.label}</p><p className="mt-0.5 text-xs text-ink/50">{item.detail}</p></div><span className="ml-auto text-ink/30">→</span></div>)}
             </div>
           </div>
         </div>

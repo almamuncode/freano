@@ -64,19 +64,19 @@ export default function InstallPrompt() {
   }
 
   if (!expanded) return (
-    <button type="button" onClick={() => setExpanded(true)} className="fixed bottom-24 right-4 z-[60] rounded-2xl border border-white/15 bg-[#111714] p-1.5 shadow-xl transition hover:-translate-y-0.5 hover:shadow-2xl lg:bottom-5" aria-label="Install Freano" title="Install Freano">
-      <img src="/icons/icon-dark-192.png" alt="" className="h-10 w-10 rounded-xl" />
+    <button type="button" onClick={() => setExpanded(true)} className="fixed bottom-24 right-4 z-[60] rounded-2xl border border-white/15 bg-[#291268] p-1.5 shadow-xl transition hover:-translate-y-0.5 hover:shadow-2xl lg:bottom-5" aria-label="Install Freano" title="Install Freano">
+      <img src="/icons/freano-app.png" alt="" className="h-10 w-10 rounded-xl" />
     </button>
   );
 
   return (
-    <aside className="fixed inset-x-3 bottom-24 z-[60] mx-auto max-w-xs rounded-2xl border border-white/10 bg-[#111714]/95 p-3 text-white shadow-2xl backdrop-blur-xl lg:inset-x-auto lg:bottom-5 lg:right-5 lg:mx-0" aria-label="Install Freano">
+    <aside className="fixed inset-x-3 bottom-24 z-[60] mx-auto max-w-xs rounded-2xl border border-white/10 bg-[#291268]/95 p-3 text-white shadow-2xl backdrop-blur-xl lg:inset-x-auto lg:bottom-5 lg:right-5 lg:mx-0" aria-label="Install Freano">
       <div className="flex items-center gap-3">
-        <img src="/icons/icon-dark-192.png" alt="" className="h-11 w-11 rounded-xl" />
+        <img src="/icons/freano-app.png" alt="" className="h-11 w-11 rounded-xl" />
         <div className="min-w-0 flex-1"><p className="text-sm font-bold">Keep Freano on your home screen</p><p className="mt-0.5 text-[11px] text-white/55">Open your finances faster, like a regular app.</p></div>
         <button type="button" aria-label="Collapse install prompt" onClick={collapse} className="self-start px-1 text-xl leading-none text-white/45 hover:text-white">×</button>
       </div>
-      <button type="button" onClick={installApp} className="mt-3 w-full rounded-xl bg-[#78d94f] px-4 py-2.5 text-sm font-bold text-[#132014] hover:bg-[#89e662]">{installEvent ? "Install Freano" : "Show install steps"}</button>
+      <button type="button" onClick={installApp} className="mt-3 w-full rounded-xl bg-[#ff8038] px-4 py-2.5 text-sm font-bold text-[#ffffff] hover:bg-[#ff995c]">{installEvent ? "Install Freano" : "Show install steps"}</button>
       {helpVisible && <p className="mt-2 rounded-lg bg-white/[0.06] px-3 py-2 text-xs font-normal leading-5 text-white/70">{isIos ? "Tap the Share button in Safari, then choose “Add to Home Screen”." : "Open your browser menu and choose “Install app” or “Add to Home screen”."}</p>}
     </aside>
   );

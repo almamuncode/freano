@@ -8,9 +8,9 @@ export default function SummaryCard({
   colorClass: string;
 }) {
   return (
-    <div className="bg-white rounded-xl shadow p-5">
+    <div className="card-surface p-6">
       <p className="text-sm text-gray-500">{label}</p>
-      <p className={`text-2xl font-bold ${colorClass}`}>
+      <p className={`mt-3 text-3xl font-bold tracking-tight ${colorClass}`}>
         {new Intl.NumberFormat("en-BD", { style: "currency", currency: "BDT" }).format(amount)}
       </p>
     </div>
