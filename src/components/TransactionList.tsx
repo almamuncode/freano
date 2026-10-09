@@ -5,6 +5,8 @@ import { useWorkspace } from "@/components/WorkspaceContext";
 import { WorkspaceLink as Link } from "@/components/WorkspaceContext";
 import { useEffect, useState } from "react";
 import { Transaction } from "@/types";
+import StatusBadge from "@/components/StatusBadge";
+import CategoryIcon from "@/components/CategoryIcon";
 import { showToast } from "@/lib/toast";
 
 function formatMoney(amount: number, currency: string) {
@@ -49,7 +51,7 @@ export default function TransactionList({ transactions }: { transactions: Transa
       {visibleTransactions.map((t) => (
         <div key={t.id} className="flex min-w-0 items-start justify-between gap-2 px-3 py-4 transition hover:bg-brand/[0.025] min-[380px]:gap-3 min-[380px]:px-4 sm:items-center sm:px-5">
           <div className="flex min-w-0 items-center gap-3">
-            <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-base ${t.type === "INCOME" ? "bg-income/10 text-income" : "bg-expense/10 text-expense"}`}>{t.category?.icon ?? (t.isDeposit ? "↳" : t.type === "INCOME" ? "+" : "−")}</span>
+            <CategoryIcon name={t.category?.name || t.source} income={t.type === "INCOME"} transfer={Boolean(t.transferId || t.isDeposit)} />
             <div className="min-w-0"><p className="truncate font-semibold text-ink">
               {t.isDeposit ? "Deposit: " : ""}{t.source}
             </p>
@@ -60,6 +62,7 @@ export default function TransactionList({ transactions }: { transactions: Transa
               })}{" "}
               · {t.account === "POCKET_MONEY" ? "Pocket money" : t.account === "SAVINGS" ? "Personal savings" : "Bank"} · {t.scope.charAt(0) + t.scope.slice(1).toLowerCase()} · {t.paymentMethod.replace("_", " ")}
             </p>
+            {t.category && <span className="mt-1 inline-flex"><StatusBadge tone={t.transferId ? "purple" : t.type === "INCOME" ? "green" : "orange"}>{t.category.name}</StatusBadge></span>}
             {t.note && <p className="truncate text-xs text-ink/40">{t.note}</p>}</div>
           </div>
           <div className="flex max-w-[40%] shrink-0 flex-col items-end gap-2 sm:max-w-none">

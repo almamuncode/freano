@@ -9,15 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        income: "#5428df",
-        expense: "#c64d16",
+        income: "#00b96b",
+        expense: "#ff285c",
         brand: {
-          DEFAULT: "#5428df",
+          DEFAULT: "#601bff",
           light: "#ff8038",
-          dark: "#4320bb",
+          dark: "#4510cc",
         },
         paper: "#f5f3fc",
-        ink: "#211b39",
+        ink: "#171044",
         brass: {
           DEFAULT: "#817493",
           light: "#a59bb6",

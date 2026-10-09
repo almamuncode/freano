@@ -143,27 +143,27 @@ html.dark {
   }
 
   .dark .text-income {
-    color: #c8b6ff;
+    color: #40db9c;
   }
 
   .dark .text-expense {
-    color: #ffbe96;
+    color: #ff7798;
   }
 
   .dark .bg-income {
-    background-color: #6338e8;
+    background-color: #008c52;
   }
 
   .dark .bg-expense {
-    background-color: #a94417;
+    background-color: #d91d4a;
   }
 
   .dark .bg-income:hover {
-    background-color: #7348ef;
+    background-color: #00a662;
   }
 
   .dark .bg-expense:hover {
-    background-color: #c64d16;
+    background-color: #ed2354;
   }
 
   .dark .text-white\/60,
@@ -235,8 +235,8 @@ html.dark {
 
 @layer components {
   .card-surface {
-    @apply rounded-[28px] border border-hairline bg-white/90 shadow-sm backdrop-blur-sm;
-    box-shadow: 0 1px 2px rgba(67, 32, 187, 0.025), 0 12px 34px rgba(67, 32, 187, 0.065);
+    @apply rounded-2xl border border-hairline bg-white/90 shadow-sm backdrop-blur-sm;
+    box-shadow: 0 1px 2px rgba(67, 32, 187, 0.025), 0 4px 16px rgba(67, 32, 187, 0.035);
   }
 
   .page-kicker { @apply text-[11px] font-bold uppercase tracking-[0.2em] text-brand; }
@@ -311,13 +311,6 @@ html.dark {
   body:has(.mobile-app-nav) .toast-viewport { bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
 }
 
-@media (max-width: 420px) {
-  .grid-cols-2,
-  .grid-cols-\[1fr_100px\] {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-}
-
 @media (max-width: 639px) {
   .earnings-form .grid-cols-2,
   .earnings-form .grid-cols-\[1fr_100px\] {
@@ -352,4 +345,13 @@ html.dark {
   .auth-art { background: linear-gradient(145deg, #4320bb, #6338e8 65%, #8457f5); }
   .auth-art::before { content: ""; position: absolute; width: 26rem; height: 26rem; border: 65px solid rgba(255,255,255,.07); border-radius: 50%; right: -13rem; top: -10rem; pointer-events: none; }
   .auth-art::after { content: ""; position: absolute; width: 18rem; height: 18rem; border: 1px solid rgba(255,128,56,.7); border-radius: 50%; left: -7rem; bottom: -7rem; pointer-events: none; }
+}
+
+@layer components {
+  .status-badge { @apply inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-semibold; }
+  .status-green { @apply bg-emerald-500/10 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300; }
+  .status-blue { @apply bg-blue-500/10 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300; }
+  .status-orange { @apply bg-orange-500/10 text-orange-700 dark:bg-orange-400/15 dark:text-orange-300; }
+  .status-pink { @apply bg-rose-500/10 text-rose-700 dark:bg-rose-400/15 dark:text-rose-300; }
+  .status-purple { @apply bg-violet-500/10 text-violet-700 dark:bg-violet-400/15 dark:text-violet-300; }
 }

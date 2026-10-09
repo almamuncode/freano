@@ -86,7 +86,7 @@ export default async function DashboardPage() {
         <p className="text-sm font-medium text-ink/55">{now.toLocaleDateString("en-BD", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
       </div>
 
-      <section className="relative overflow-hidden rounded-[32px] border border-[#7348ef] bg-[linear-gradient(125deg,#4320bb_0%,#5428df_56%,#7348ef_100%)] p-6 text-white shadow-xl shadow-[#5428df]/20 sm:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-[#7348ef] bg-[linear-gradient(125deg,#3610c4_0%,#5016eb_56%,#7028ff_100%)] p-6 text-white shadow-xl shadow-[#5428df]/20 sm:p-8">
           <div className="pointer-events-none absolute -right-16 -top-28 h-72 w-72 rounded-full border-[38px] border-[#bfaaff]/10" />
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -97,8 +97,8 @@ export default async function DashboardPage() {
             </div>
             <span className="rounded-full border border-white/15 bg-black/10 px-3 py-1 text-[11px] font-medium text-white/80">BDT • All accounts</span>
           </div>
-          <p className="mt-9 break-words text-3xl font-bold tracking-tight tabular-nums min-[380px]:text-4xl sm:text-5xl">{formatMoney(totalBalance)}</p>
-          <div className="mt-8 grid grid-cols-2 gap-3">
+          <p className="mt-5 break-words text-3xl font-bold tracking-tight tabular-nums min-[380px]:text-4xl sm:text-5xl">{formatMoney(totalBalance)}</p>
+          <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-white/10 bg-white/10 p-4 backdrop-blur"><p className="text-xs text-white/60">This month income</p><p className="mt-1 text-lg font-semibold text-[#e0d5ff]">+{formatMoney(monthIncome)}</p></div>
             <div className="rounded-xl border border-white/10 bg-white/10 p-4 backdrop-blur"><p className="text-xs text-white/60">This month expense</p><p className="mt-1 text-lg font-semibold text-[#ffd5bd]">-{formatMoney(monthExpense)}</p></div>
           </div>
@@ -118,7 +118,7 @@ export default async function DashboardPage() {
       <div className="grid min-w-0 gap-5 lg:items-start lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         <div className="min-w-0 space-y-5">
         <section className="card-surface p-5 sm:p-6">
-          <div className="mb-5 flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end"><div className="min-w-0"><h2 className="text-lg font-bold text-ink">Monthly movement</h2><p className="mt-1 text-sm text-ink/55">Income and expenses in {now.toLocaleDateString("en-BD", { month: "long" })}</p></div><div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-ink/60"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-income" />Income</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-expense" />Expense</span><span className={`max-w-full truncate rounded-full px-2.5 py-1 font-bold ${monthIncome - monthExpense >= 0 ? "bg-[#f0eaff] text-sage" : "bg-[#fff0e6] text-rust"}`}>Net {formatMoney(monthIncome - monthExpense)}</span></div></div>
+          <div className="mb-5 flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end"><div className="min-w-0"><h2 className="text-lg font-bold text-ink">Monthly movement</h2><p className="mt-1 text-sm text-ink/55">Income and expenses in {now.toLocaleDateString("en-BD", { month: "long" })}</p></div><div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-ink/60"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-[#601bff]" />Income</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-[#ff914d]" />Expense</span><span className={`max-w-full truncate rounded-full px-2.5 py-1 font-bold ${monthIncome - monthExpense >= 0 ? "bg-[#f0eaff] text-sage" : "bg-[#fff0e6] text-rust"}`}>Net {formatMoney(monthIncome - monthExpense)}</span></div></div>
           <DashboardChart data={chartData} />
         </section>
         <section>

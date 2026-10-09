@@ -1,4 +1,5 @@
 import { WorkspaceLink as Link } from "@/components/WorkspaceContext";
+import CategoryIcon from "@/components/CategoryIcon";
 import TransactionList from "@/components/TransactionList";
 import { Account, Transaction } from "@/types";
 
@@ -18,8 +19,8 @@ export default function AccountLedger({ account, balance, transactions, bank, wa
 
   return (
     <div className="space-y-5">
-      <section className="card-surface bg-[#20293A] p-6 text-white sm:p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#c8b6ff]">Account balance</p>
+      <section className="rounded-2xl bg-gradient-to-br from-[#3610c4] to-[#7028ff] p-6 text-white sm:p-8">
+        <div className="flex items-center gap-3"><CategoryIcon name={account === "WALLET" ? "wallet" : account === "BANK" || account === "SAVINGS" ? "bank" : "income"} /><p className="text-sm font-semibold text-white/75">Account balance</p></div>
         <div className="mt-3 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><h1 className="account-balance-heading text-3xl font-bold">{bank?.name ?? wallet?.name ?? info.title}</h1><p className="mt-1 text-sm text-white/65">{bank?.details || wallet?.details || info.subtitle}</p></div><p className="text-4xl font-bold">{money}</p></div>
         {account !== "SAVINGS" && <Link href={`/bills/pay?${accountParam}${returnTo}`} className="mt-5 inline-flex rounded-lg bg-[#fff0df] px-4 py-2.5 text-sm font-semibold text-brass">Pay bill</Link>}
         {account !== "BANK" && !action && <div className="mt-6 grid grid-cols-2 gap-3 sm:max-w-md"><Link href={`/transactions/add?type=INCOME&${accountParam}${returnTo}`} className="rounded-lg bg-[#eee8ff] px-4 py-3 text-center text-sm font-semibold text-sage">+ {info.addLabel}</Link><Link href={`/transactions/add?type=EXPENSE&${accountParam}${returnTo}`} className="rounded-lg bg-[#ffede3] px-4 py-3 text-center text-sm font-semibold text-rust">- Record expense</Link></div>}
